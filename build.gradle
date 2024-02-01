@@ -29,6 +29,10 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.hibernate.orm:hibernate-core:6.4.0.Final'
+	implementation 'org.springframework:spring-orm:6.1.1'
+	implementation 'org.apache.tomcat:tomcat-dbcp:9.0.10'
+	implementation 'mysql:mysql-connector-java:8.0.33'
 }
 
 tasks.named('test') {
