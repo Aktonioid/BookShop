@@ -1,15 +1,18 @@
 package com.bookshop.bookshop.dtos;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
-import com.bookshop.bookshop.core.models.GenreModel;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookModelDto 
 {
     private UUID id;
@@ -21,7 +24,7 @@ public class BookModelDto
     private int price; // стоимость
     private String isbn; //Уникальный идентификатор книги
     
-    private Set<GenreModel> genres; //Жанры книги
+    private List<GenreModelDto> genres; //Жанры книги
     
     private String description; // описание книги
     private String pictureUrl; // ссылка на url книги

@@ -1,7 +1,7 @@
 package com.bookshop.bookshop.dtos;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class OrderModelDto
     private UUID id;
     
     private boolean isSend;
-    private Set<OrderPartModelDto> books;
+    private List<OrderPartModelDto> books;
     private Date sendDate;
     private String userFullName;
     private String deliveryAdress;

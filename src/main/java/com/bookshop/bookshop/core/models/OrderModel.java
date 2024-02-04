@@ -1,6 +1,6 @@
 package com.bookshop.bookshop.core.models;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,7 +13,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,8 +21,8 @@ import lombok.Setter;
 @Table(name = "orders")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+// @AllArgsConstructor
 public class OrderModel 
 {
     @Id
@@ -51,5 +50,20 @@ public class OrderModel
     private boolean paymentStatus; // хз в каком формате оставлю. Мб тут оставлю для типа связи со складом
                                   // но проверку на то оплачен заказ или нет через другую табличку, которая работает с типа платежной системой
 
-    
+    public OrderModel(UUID id)
+    {
+        this.id = id;
+    }
+
+    public OrderModel(
+            UUID id, 
+            boolean isSend, 
+            Set<OrderPartModel> books, 
+            Date sendDate,
+            String userFullName,
+            String deliveryAdress,
+            boolean paymentStatus)
+            {
+                
+            }
 }

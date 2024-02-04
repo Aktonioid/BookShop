@@ -20,7 +20,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "order_part")
 @Getter
-@Setter
+@Setter 
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderPartModel 

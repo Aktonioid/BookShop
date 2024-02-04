@@ -33,6 +33,11 @@ dependencies {
 	implementation 'org.springframework:spring-orm:6.1.1'
 	implementation 'org.apache.tomcat:tomcat-dbcp:9.0.10'
 	implementation 'mysql:mysql-connector-java:8.0.33'
+	
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'	
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+
 }
 
 tasks.named('test') {

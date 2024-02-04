@@ -29,6 +29,7 @@ public class DatabaseConfig
     @Autowired
     Environment env;
 
+    @Bean
     public DataSource DataSource()
     {
         BasicDataSource dataSource = new BasicDataSource();

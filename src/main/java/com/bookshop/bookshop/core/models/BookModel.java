@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import io.micrometer.common.lang.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,8 +22,8 @@ import lombok.Setter;
 @Table(name = "books")
 @Getter
 @Setter
-@AllArgsConstructor
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class BookModel 
 {
     @Id
@@ -39,7 +40,7 @@ public class BookModel
     private String isbn; //Уникальный идентификатор книги
     
     @Nullable
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     // @JoinColumn(name = "genre_id")
     private Set<GenreModel> genres; //Жанры книги
     
