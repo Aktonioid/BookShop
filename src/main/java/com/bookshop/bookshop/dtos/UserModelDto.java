@@ -19,6 +19,7 @@ public class UserModelDto
 
     private String username;
     
+    private String name;
 
     private String userSurname;
 

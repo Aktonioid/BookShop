@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,13 +25,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserModel implements UserDetails
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Id // генерируем сами при создании
     UUID id;    
 
-    @Column(name = "user_name")
+    @Column(name = "username")
     private String username;
-    
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "user_surname")
     private String userSurname;

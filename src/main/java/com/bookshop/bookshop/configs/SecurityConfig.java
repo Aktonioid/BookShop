@@ -2,22 +2,46 @@ package com.bookshop.bookshop.configs;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.bookshop.bookshop.core.coreServices.IUserService;
+
+import lombok.RequiredArgsConstructor;
+
+
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
 @ComponentScan(basePackages = 
 {
     "com.bookshop.bookshop"
 })
 public class SecurityConfig 
 {
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private IUserService userService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
@@ -25,9 +49,15 @@ public class SecurityConfig
         http.csrf(csrf -> csrf.disable());
         
         // насройка аутентификации пользователей 
-        http.authorizeHttpRequests(req ->
-            req.anyRequest().permitAll());
+        http.authorizeHttpRequests(req ->req
+            .requestMatchers("/test/secured").hasAnyRole("USER","ADMIN")
+            .anyRequest().permitAll()
+            );
         
+        http.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(AuthenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         // передаем настройки корсов
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
@@ -47,5 +77,27 @@ public class SecurityConfig
         configurationSource.registerCorsConfiguration("/**", configuration);
 
         return configurationSource;
+    }
+
+    @Bean
+    public PasswordEncoder PasswordEncoder()
+    {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider AuthenticationProvider()
+    {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userService.UserDetailsService());
+        authProvider.setPasswordEncoder(PasswordEncoder());;
+
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
+        return config.getAuthenticationManager();
     }
 }

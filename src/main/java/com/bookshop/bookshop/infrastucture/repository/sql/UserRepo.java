@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.MutationQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.bookshop.bookshop.core.coreRepositories.IUserRepo;
 import com.bookshop.bookshop.core.models.UserModel;
@@ -17,6 +18,7 @@ import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
+@Repository
 public class UserRepo implements IUserRepo
 {
 
@@ -26,21 +28,25 @@ public class UserRepo implements IUserRepo
     @Override
     public UserModel UserById(UUID id) {
     
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class); 
         Root<UserModel> root = cq.from(UserModel.class);
 
         cq.select(root).where(root.get("id").in(id));
-        return session.createQuery(cq).uniqueResult();
+        UserModel userModel = session.createQuery(cq).uniqueResult(); 
+
+        session.close();
+
+        return userModel;
     }
     
 
     @Override
     public UserModel UserByEmail(String email) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class); 
@@ -48,13 +54,16 @@ public class UserRepo implements IUserRepo
 
         cq.select(root).where(root.get("email").in(email));
 
-        return session.createQuery(cq).uniqueResult();
+        UserModel userModel = session.createQuery(cq).uniqueResult(); 
+
+        session.close();
+        return userModel;
     }
 
     @Override
     public UserModel UserByUsername(String username) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class); 
@@ -62,14 +71,17 @@ public class UserRepo implements IUserRepo
 
         cq.select(root)
             .where(root.get("username").in(username));
+        
+        UserModel userModel = session.createQuery(cq).uniqueResult(); 
 
-        return session.createQuery(cq).uniqueResult();
+        session.close();
+        return userModel;
     }
 
     @Override
     public boolean CreateUser(UserModel userModel) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         try
@@ -89,14 +101,17 @@ public class UserRepo implements IUserRepo
             transaction.rollback();
             throw e;
         }   
-
+        finally
+        {
+            session.close();
+        }
         return true;
     }
 
     @Override
     public boolean DeleteUserById(UUID id) 
     {
-        Session session =  sessionFactory.getCurrentSession();
+        Session session =  sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -124,6 +139,10 @@ public class UserRepo implements IUserRepo
             transaction.rollback();
             throw e;
         }
+        finally
+        {
+            session.close();
+        }
 
         return true;
     }
@@ -131,7 +150,7 @@ public class UserRepo implements IUserRepo
     @Override
     public boolean UpdateUser(UserModel userModel) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
         
 
@@ -151,6 +170,10 @@ public class UserRepo implements IUserRepo
         {
             transaction.rollback(); 
             throw e;
+        }
+        finally
+        {
+            session.close();
         }
 
         return true;
