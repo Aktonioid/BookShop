@@ -2,6 +2,7 @@ package com.bookshop.bookshop.infrastucture.controllers;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.bookshop.bookshop.core.mappers.UserModelMapper;
 import com.bookshop.bookshop.core.models.GenreModel;
+import com.bookshop.bookshop.core.models.UserModel;
+import com.bookshop.bookshop.dtos.UserModelDto;
 import com.bookshop.bookshop.infrastucture.repository.sql.GnereRepo;
+import com.bookshop.bookshop.infrastucture.repository.sql.UserRepo;
+import com.bookshop.bookshop.infrastucture.services.JwtService;
+import com.bookshop.bookshop.infrastucture.services.UserService;
 
 @Controller
 @RequestMapping("test")
@@ -21,6 +28,12 @@ public class TestController
 {
     @Autowired
     GnereRepo repo;
+    @Autowired
+    JwtService service;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserRepo userRepo;
 
     @GetMapping("/")
     public ResponseEntity<List<GenreModel>> GetAll()
@@ -39,5 +52,23 @@ public class TestController
     {
         repo.CreateModel(model);
         return ResponseEntity.ok("");
+    }
+
+    @GetMapping("/secured")
+    public ResponseEntity<String> Secured()
+    {
+        return ResponseEntity.ok("Secured");
+    }
+
+    @GetMapping("/jwt")
+    public ResponseEntity<Boolean> jwt(String jwt, String username) throws InterruptedException, ExecutionException
+    {
+        return ResponseEntity.ok(service.IsTokenValid(jwt, UserModelMapper.AsEntity(userService.GetUserByUserName(username).get())));
+    }
+    @GetMapping("/user")
+    public ResponseEntity<UserModel> GetUserByUserName(String username) throws InterruptedException, ExecutionException
+    {
+        UserModel model  = UserModelMapper.AsEntity(userService.GetUserByUserName(username).get());
+        return ResponseEntity.ok(model);
     }
 }

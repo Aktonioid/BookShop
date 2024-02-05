@@ -1,9 +1,10 @@
-package com.bookshop.bookshop.infrastucture.repository.sql;
+package com.bookshop.bookshop.infrastucture.services;
 
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,14 +12,16 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
 import com.bookshop.bookshop.core.coreServices.IJwtService;
 import com.bookshop.bookshop.core.models.UserModel;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.impl.lang.Function;
 
 @PropertySource("security.properties")
+@Service
 public class JwtService implements IJwtService
 {
     @Autowired
@@ -34,6 +37,12 @@ public class JwtService implements IJwtService
     public String ExtractEmail(String token) 
     {
         return ExtractClaims(token, null);
+    }
+
+    @Override
+    public String ExtractId(String token)
+    {
+        return ExrtactAllClaims(token).get("id").toString();
     }
 
     @Override
