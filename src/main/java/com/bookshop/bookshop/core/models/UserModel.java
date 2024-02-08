@@ -69,5 +69,8 @@ public class UserModel implements UserDetails
         return true;
     }
    
-    
+    public UserModel(UUID id)
+    {
+        this.id = id;
+    }
 }

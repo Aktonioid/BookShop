@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.bookshop.bookshop.core.mappers.UserModelMapper;
 import com.bookshop.bookshop.core.models.GenreModel;
 import com.bookshop.bookshop.core.models.UserModel;
-import com.bookshop.bookshop.dtos.UserModelDto;
 import com.bookshop.bookshop.infrastucture.repository.sql.GnereRepo;
 import com.bookshop.bookshop.infrastucture.repository.sql.UserRepo;
 import com.bookshop.bookshop.infrastucture.services.JwtService;

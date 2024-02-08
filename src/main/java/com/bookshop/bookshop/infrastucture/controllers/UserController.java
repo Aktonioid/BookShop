@@ -17,10 +17,8 @@ import com.bookshop.bookshop.core.coreServices.IJwtService;
 import com.bookshop.bookshop.core.coreServices.IUserService;
 import com.bookshop.bookshop.core.mappers.UserModelMapper;
 import com.bookshop.bookshop.core.models.Role;
-import com.bookshop.bookshop.core.models.UserModel;
 import com.bookshop.bookshop.dtos.LogInModel;
 import com.bookshop.bookshop.dtos.UserModelDto;
-import com.bookshop.bookshop.infrastucture.services.UserService;
 
 @RequestMapping("/user")
 @Controller
