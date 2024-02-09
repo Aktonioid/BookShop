@@ -49,6 +49,8 @@ public class OrderModel
     @Column(name = "payment_status")
     private boolean paymentStatus; // хз в каком формате оставлю. Мб тут оставлю для типа связи со складом
                                   // но проверку на то оплачен заказ или нет через другую табличку, которая работает с типа платежной системой
+    @JoinColumn(name = "user_id")
+    UserModel userId;
 
     public OrderModel(UUID id)
     {

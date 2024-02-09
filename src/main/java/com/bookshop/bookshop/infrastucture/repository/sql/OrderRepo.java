@@ -1,17 +1,18 @@
 package com.bookshop.bookshop.infrastucture.repository.sql;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.MutationQuery;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.bookshop.bookshop.core.coreRepositories.IUserRepo;
-import com.bookshop.bookshop.core.models.UserModel;
+import com.bookshop.bookshop.core.coreRepositories.IOrderRepo;
+import com.bookshop.bookshop.core.models.OrderModel;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
@@ -19,67 +20,72 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 @Repository
-public class UserRepo implements IUserRepo
+public class OrderRepo implements IOrderRepo
 {
 
     @Autowired
     SessionFactory sessionFactory;
 
     @Override
-    public UserModel UserById(UUID id) {
-    
+    public List<OrderModel> GetAllOrders() 
+    {
         Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class); 
-        Root<UserModel> root = cq.from(UserModel.class);
+        CriteriaQuery<OrderModel> cq = cb.createQuery(OrderModel.class);
+        Root<OrderModel> root = cq.from(OrderModel.class);
+
+        cq.select(root);
+        List<OrderModel> orderModels = session.createQuery(cq).getResultList();
+
+        session.close();
+        return orderModels;
+    }
+
+    @Override
+    public OrderModel GetOrderById(UUID id) 
+    {
+        Session session = sessionFactory.openSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<OrderModel> cq = cb.createQuery(OrderModel.class);
+        Root<OrderModel> root = cq.from(OrderModel.class);
 
         cq.select(root).where(root.get("id").in(id));
-        UserModel userModel = session.createQuery(cq).uniqueResult(); 
-
-        session.close();
-
-        return userModel;
-    }
-    
-
-    @Override
-    public UserModel UserByEmail(String email) 
-    {
-        Session session = sessionFactory.openSession();
-
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class); 
-        Root<UserModel> root = cq.from(UserModel.class);
-
-        cq.select(root).where(root.get("email").in(email));
-
-        UserModel userModel = session.createQuery(cq).uniqueResult(); 
-
-        session.close();
-        return userModel;
-    }
-
-    @Override
-    public UserModel UserByUsername(String username) 
-    {
-        Session session = sessionFactory.openSession();
-
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class); 
-        Root<UserModel> root = cq.from(UserModel.class);
-
-        cq.select(root)
-            .where(root.get("username").in(username));
         
-        UserModel userModel = session.createQuery(cq).uniqueResult(); 
+        OrderModel order = session.createQuery(cq).uniqueResult();
 
         session.close();
-        return userModel;
+        return order;
     }
 
     @Override
-    public boolean CreateUser(UserModel userModel) 
+    public List<OrderModel> GetOrdersByUserId(UUID userId, int page) 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<OrderModel> cq = cb.createQuery(OrderModel.class);
+        Root<OrderModel> root = cq.from(OrderModel.class);
+
+        cq.select(root).where(root.get("userId").in(userId));
+
+        Query<OrderModel> query = session.createQuery(cq);
+        // пагинация
+        query.setFirstResult((page-1) * pageSize);// Чтоб ничего не брать все записи из бд
+        query.setMaxResults(pageSize);
+
+        List<OrderModel> orderModels = query.getResultList();
+
+        session.close();
+
+        return orderModels;
+    }
+
+    @Override
+    public boolean CreateOrder(OrderModel model) 
     {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
@@ -87,97 +93,90 @@ public class UserRepo implements IUserRepo
         try
         {
             transaction.begin();
-            session.persist(userModel);
+            session.persist(model);
             transaction.commit();
         }
         catch(HibernateException e)
         {
             e.printStackTrace();
             transaction.rollback();
+            session.close();
             return false;
         }
         catch(Exception e)
         {
             transaction.rollback();
-            throw e;
-        }   
-        finally
-        {
             session.close();
+            throw e;
         }
+        session.close(); 
+
         return true;
     }
 
     @Override
-    public boolean DeleteUserById(UUID id) 
+    public boolean UpdateOrder(OrderModel model) 
     {
-        Session session =  sessionFactory.openSession();
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+
+        try
+        {
+            transaction.begin();
+            session.merge(model);
+            transaction.commit();
+        }
+        catch(HibernateException e)
+        {
+            e.printStackTrace();
+            transaction.rollback();
+            session.close();
+            return false;
+        }
+        catch(Exception e)
+        {
+            transaction.rollback();
+            session.close();
+            throw e;
+        }
+        session.close();
+        return true;
+    }
+
+    @Override
+    public boolean DeleteOrderById(UUID id) 
+    {
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaDelete<UserModel> cd = cb.createCriteriaDelete(UserModel.class);
-        Root<UserModel> root = cd.from(UserModel.class);
+        CriteriaDelete<OrderModel> cd = cb.createCriteriaDelete(OrderModel.class);
+        Root<OrderModel> root = cd.from(OrderModel.class);
 
         cd.where(root.get("id").in(id));
-
-        MutationQuery mutation = session.createMutationQuery(cd);
-         
-        try
-        {
-            transaction.begin();
-            mutation.executeUpdate();
-            transaction.commit();
-        }
-        catch(HibernateException e)
-        {
-            e.printStackTrace();
-            transaction.rollback();
-            return false;
-        }
-        catch(Exception e)
-        {
-            transaction.rollback();
-            throw e;
-        }
-        finally
-        {
-            session.close();
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean UpdateUser(UserModel userModel) 
-    {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
         
-
         try
         {
             transaction.begin();
-            session.merge(userModel);
+            session.createMutationQuery(cd).executeUpdate();
             transaction.commit();
         }
         catch(HibernateException e)
         {
             e.printStackTrace();
             transaction.rollback();
+            session.close();
             return false;
         }
         catch(Exception e)
         {
-            transaction.rollback(); 
+            transaction.rollback();
+            session.close();
             throw e;
         }
-        finally
-        {
-            session.close();
-        }
+        session.close();
 
         return true;
     }
-
     
 }
