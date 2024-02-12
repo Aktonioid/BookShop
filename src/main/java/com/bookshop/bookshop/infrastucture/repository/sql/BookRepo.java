@@ -149,7 +149,7 @@ public class BookRepo implements IBookRepo
     }
 
     @Override
-    public List<BookModel> GetBooksByGenres(ArrayList<GenreModel> genres, int page) 
+    public List<BookModel> GetBooksByGenres(List<GenreModel> genres, int page) 
     {
         int pageSize = 20;
 

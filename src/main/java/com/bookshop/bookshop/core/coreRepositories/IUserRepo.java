@@ -12,4 +12,6 @@ public interface IUserRepo
     public boolean CreateUser(UserModel userModel);
     public boolean DeleteUserById(UUID id);
     public boolean UpdateUser(UserModel userModel);
+    public boolean IsUserExhistsByEmail(String email);
+    public boolean IsUserExhistsByUsername(String username);
 }

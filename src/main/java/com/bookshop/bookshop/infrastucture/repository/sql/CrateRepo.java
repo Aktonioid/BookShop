@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.bookshop.bookshop.core.coreRepositories.ICrateRepo;
 import com.bookshop.bookshop.core.models.CrateModel;
@@ -21,6 +22,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 
+@Repository
 public class CrateRepo implements ICrateRepo
 {
     @Autowired

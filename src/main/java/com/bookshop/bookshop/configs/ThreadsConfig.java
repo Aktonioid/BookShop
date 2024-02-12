@@ -2,6 +2,7 @@ package com.bookshop.bookshop.configs;
 
 import java.util.concurrent.Executor;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @ComponentScan
 @EnableAsync
+@EnableCaching
 public class ThreadsConfig 
 {
     @Bean

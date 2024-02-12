@@ -1,6 +1,5 @@
 package com.bookshop.bookshop.core.coreRepositories;
 
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 
@@ -15,5 +14,5 @@ public interface IBookRepo
     public boolean CreateBook(BookModel model);
     public boolean DeleteBookById(UUID id);
     public boolean UpdateBook(BookModel model);
-    public List<BookModel> GetBooksByGenres(ArrayList<GenreModel> genres, int page);
+    public List<BookModel> GetBooksByGenres(List<GenreModel> genres, int page);
 }

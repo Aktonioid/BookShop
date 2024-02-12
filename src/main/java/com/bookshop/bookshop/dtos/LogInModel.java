@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LogInModel 
 {
-    private String username; // мб поменяю на email 
+    private String login; // email или username 
     private String password;     
 }

@@ -14,5 +14,5 @@ public interface IBookService
     public CompletableFuture<Boolean> CreateModel(BookModelDto model);
     public CompletableFuture<Boolean> DeleteModelById(UUID id);
     public CompletableFuture<Boolean> UpdateModel(BookModelDto model);
-    public CompletableFuture<Boolean> GetBooksByGenres(List<GenreModelDto> genres, int page);
+    public CompletableFuture<List<BookModelDto>> GetBooksByGenres(List<GenreModelDto> genres, int page);
 }
