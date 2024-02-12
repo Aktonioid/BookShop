@@ -10,9 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "refreshTokens")
+@Getter
+@Setter
 public class RefreshToken 
 {
     @Id
@@ -23,5 +27,6 @@ public class RefreshToken
     @Temporal(TemporalType.DATE)
     @Basic
     private Date expiredDate; // дата когда токен истекает
-    
+
+    private String token;
 }

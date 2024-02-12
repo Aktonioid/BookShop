@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.bookshop.bookshop.core.mappers.UserModelMapper;
@@ -69,5 +71,14 @@ public class TestController
     {
         UserModel model  = UserModelMapper.AsEntity(userService.GetUserByUserName(username).get());
         return ResponseEntity.ok(model);
+    }
+
+
+    @GetMapping("/jwtest")
+    public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String token)
+    {
+        System.out.println(token);
+
+        return ResponseEntity.ok(false);
     }
 }

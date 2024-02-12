@@ -57,14 +57,30 @@ public class UserService implements IUserService
     @Async
     public CompletableFuture<UserModelDto> GetUserByEmail(String email) 
     {
-        return CompletableFuture.completedFuture(UserModelMapper.AsDto(userRepo.UserByEmail(email)));
+        UserModel model = userRepo.UserByEmail(email);
+
+        if(model == null)
+        {
+            return null;
+        }
+
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(model));
     }
 
     @Override
     @Async
     public CompletableFuture<UserModelDto> GetUserByUserName(String username) 
-    {
-        return CompletableFuture.completedFuture(UserModelMapper.AsDto(userRepo.UserByUsername(username)));
+    {   
+        System.out.println("repo");
+        System.out.println(username);
+        UserModel model = userRepo.UserByUsername(username);
+        System.out.println("userModel  " + model==null);
+        if(model == null)
+        {
+            return null;
+        }
+
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(model));
     }
 
     @Override

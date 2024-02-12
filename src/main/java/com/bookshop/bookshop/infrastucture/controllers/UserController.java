@@ -85,7 +85,7 @@ public class UserController
 
 
         //потом просто пустоту в ответ давать будет, а токен он возвращает чтоб мне удобней было проверять
-        return ResponseEntity.ok(jwtService.GenerateToken(UserModelMapper.AsEntity(userModel)));
+        return ResponseEntity.ok(jwtService.GenerateAccessToken(UserModelMapper.AsEntity(userModel)));
     }
 
     @PostMapping("/email")
@@ -105,7 +105,7 @@ public class UserController
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        String token = jwtService.GenerateToken(UserModelMapper
+        String token = jwtService.GenerateAccessToken(UserModelMapper
                     .AsEntity(
                         userService.GetUserByUserName(model.getLogin()).get()
                         )
@@ -118,20 +118,26 @@ public class UserController
     @PostMapping("/username")
     public ResponseEntity<String> LogInByUsername(@RequestBody LogInModel model) throws InterruptedException, ExecutionException
     {
+        System.out.println(model.getLogin());
+        System.out.println(model.getPassword());
 
-        if(userService.GetUserByUserName(model.getLogin()) == null)
+        if( userService.GetUserByUserName(model.getLogin()).get()== null)
         {
+            System.out.println("username");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        
+        System.out.println(userService.GetUserByUserName(model.getLogin()) == null);
 
         model.setPassword(encoder.encode(model.getPassword()));
-       
+        System.out.println( model.getLogin());
         if(!authenticationService.SignInByLogin(model).get())
         {
+            // System.out.println("password");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        String token = jwtService.GenerateToken(UserModelMapper
+        String token = jwtService.GenerateAccessToken(UserModelMapper
                     .AsEntity(
                         userService.GetUserByUserName(model.getLogin()).get()
                         )
@@ -146,4 +152,6 @@ public class UserController
     {
         return ResponseEntity.ok(userService.GetUserByUserName(username).get());
     }
+
+
 }

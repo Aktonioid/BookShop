@@ -13,6 +13,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.bookshop.bookshop.core.coreRepositories.IUserRepo;
 import com.bookshop.bookshop.core.coreServices.IJwtService;
 import com.bookshop.bookshop.core.models.UserModel;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,11 +46,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
             filterChain.doFilter(request, response);
             return;
         }
+
+        
+
         System.out.println(authHeader);
         String jwt = authHeader.substring(BEARER_PREFIX.length());
-        String username = jwtService.ExtractUserName(jwt);
-        // String id = jwtService.ExtractId(jwt);
+        String username = "";
 
+        try
+        {
+            username = jwtService.ExtractUserName(jwt);
+        }
+        catch(ExpiredJwtException e)
+        {
+            response.sendError(403, "token expired");
+            return;
+        }
+        catch(SignatureException e)
+        {
+            response.sendError(403, "token not valid");
+            return;
+        }
+        
+        // String id = jwtService.ExtractId(jwt);
+        
         if(StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null)
         {
             UserModel userModel = null;

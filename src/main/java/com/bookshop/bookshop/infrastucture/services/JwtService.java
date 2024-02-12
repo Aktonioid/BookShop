@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -27,6 +28,7 @@ public class JwtService implements IJwtService
     @Autowired
     Environment env;
 
+
     @Override
     public String ExtractUserName(String token) 
     {
@@ -36,7 +38,7 @@ public class JwtService implements IJwtService
     @Override
     public String ExtractEmail(String token) 
     {
-        return ExtractClaims(token, null);
+        return ExrtactAllClaims(token).get("email").toString();
     }
 
     @Override
@@ -46,7 +48,7 @@ public class JwtService implements IJwtService
     }
 
     @Override
-    public String GenerateToken(UserModel user) 
+    public String GenerateAccessToken(UserModel user) 
     {
         Map<String, Object> claims = new HashMap<>();
 
@@ -61,9 +63,27 @@ public class JwtService implements IJwtService
     public boolean IsTokenValid(String token, UserModel user) 
     {
         final String username = ExtractUserName(token);
+            
         return (username.equals(user.getUsername())) && !IsTokenExpired(token); 
     }
     
+    @Override
+    public String GenerateRefreshToken(UserModel user, UUID tokenId) 
+    {
+        
+        throw new UnsupportedOperationException("Unimplemented method 'GenerateRefreshToken'");
+    }
+
+    @Override
+    public boolean IsTokenValidNoTime(String token) 
+    {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'IsTokenValidNoTime'");
+    }
+
+
+
+
     private String GenerateToken(Map<String, Object> extraClaims, UserModel user)
     {
         return Jwts.builder().claims(extraClaims).subject(user.getUsername())
@@ -72,6 +92,7 @@ public class JwtService implements IJwtService
                     .signWith(GetKey(), Jwts.SIG.HS512)
                     .compact();
     }
+    
 
 
     private <T> T ExtractClaims(String token, Function<Claims, T> claimsResolver)
@@ -101,4 +122,6 @@ public class JwtService implements IJwtService
     {
         return ExtractClaims(token, Claims::getExpiration);
     }
+
+    
 }

@@ -55,15 +55,19 @@ public class AuthenticationService implements IAuthenticationService
     public CompletableFuture<Boolean> SignInByLogin(LogInModel login) 
     {
         UserModel userModel = userRepo.UserByUsername(login.getLogin());
+        // System.out.println(login.getLogin());
+        // System.out.println(userModel == null);
 
         if(userModel == null)
         {
+            // System.out.println("model is null");
             return CompletableFuture.completedFuture(false); // пользователя с таким username нет в бд
         }
 
         // Проверка пароля
         if(encoder.matches(login.getPassword(), userModel.getPassword()))
         {
+            // System.out.println("password is incorrect");
             return CompletableFuture.completedFuture(false);    
         }
 
