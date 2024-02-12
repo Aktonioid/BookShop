@@ -179,5 +179,52 @@ public class UserRepo implements IUserRepo
         return true;
     }
 
+    // true - user существует false не существует
+    @Override
+    public boolean IsUserExhistsByEmail(String email) 
+    {
+
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class);
+        Root<UserModel> root = cq.from(UserModel.class);
+
+        cq.select(root).where(root.get("email").in(email));
+
+        UserModel model = session.createQuery(cq).uniqueResult();
+
+        session.close();
+
+        if(model == null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // true - user существует false не существует
+    @Override
+    public boolean IsUserExhistsByUsername(String username) 
+    {
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class);
+        Root<UserModel> root = cq.from(UserModel.class);
+
+        cq.select(root).where(root.get("username").in(username));
+
+        UserModel model = session.createQuery(cq).uniqueResult();
+
+        session.close();
+
+        if(model == null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     
 }
