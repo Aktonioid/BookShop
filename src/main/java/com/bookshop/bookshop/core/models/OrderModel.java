@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -50,6 +51,7 @@ public class OrderModel
     private boolean paymentStatus; // хз в каком формате оставлю. Мб тут оставлю для типа связи со складом
                                   // но проверку на то оплачен заказ или нет через другую табличку, которая работает с типа платежной системой
     @JoinColumn(name = "user_id")
+    @OneToOne
     UserModel userId;
 
     public OrderModel(UUID id)

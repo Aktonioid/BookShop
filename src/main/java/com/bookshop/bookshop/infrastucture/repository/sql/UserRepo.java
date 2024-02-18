@@ -1,5 +1,6 @@
 package com.bookshop.bookshop.infrastucture.repository.sql;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.HibernateException;
@@ -7,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.MutationQuery;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -224,6 +226,32 @@ public class UserRepo implements IUserRepo
         }
 
         return false;
+    }
+
+
+    @Override
+    //для панели админа просто получение всех пользователей по 20 на страницу
+    public List<UserModel> GetAllUsersByPage(int page) 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<UserModel> cq = cb.createQuery(UserModel.class);
+        Root<UserModel> root = cq.from(UserModel.class);
+        
+        cq.select(root);
+
+        Query<UserModel> query = session.createQuery(cq);
+        
+        query.setFirstResult((page - 1) * pageSize);
+        query.setMaxResults(pageSize);
+
+        List<UserModel> users = query.getResultList();
+
+        session.close();
+        
+        return users;
     }
 
     

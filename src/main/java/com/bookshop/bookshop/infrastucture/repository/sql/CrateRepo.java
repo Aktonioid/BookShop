@@ -29,14 +29,14 @@ public class CrateRepo implements ICrateRepo
     SessionFactory sessionFactory;
 
     @Override
-    public CrateModel GetCrateByUserId(UUID id) 
+    public CrateModel GetCrateById(UUID id) 
     {
         Session session = sessionFactory.openSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<CrateModel> cq = cb.createQuery(CrateModel.class);
         Root<CrateModel> root = cq.from(CrateModel.class);
 
-        cq.select(root).where(root.get("userId").in(id));
+        cq.select(root).where(root.get("id").in(id));
         
         CrateModel model = session.createQuery(cq).uniqueResult();
 
@@ -122,7 +122,7 @@ public class CrateRepo implements ICrateRepo
     }
 
     @Override
-    public boolean DeleteCrateByUserId(UUID userId) 
+    public boolean DeleteCrateById(UUID userId) 
     {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
@@ -168,12 +168,12 @@ public class CrateRepo implements ICrateRepo
 
         // берем id корзины для того чтобы запихнуть его в часть корзины и потом сохрангить
         cq.select(root.get("id"))
-            .where(root.get("user_id").in(userId));
+            .where(root.get("id").in(userId));
 
         try
         {
             transaction.begin();
-            part.setCrate(session.createQuery(cq).uniqueResult());
+            part.setCrate(session.createQuery(cq).uniqueResult()); // присваиваем элементу корзины id корзины(userId так как id корзины == id юзера)
             session.persist(part);
             transaction.commit();
         }

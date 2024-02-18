@@ -40,8 +40,7 @@ public class BookModel
     private String isbn; //Уникальный идентификатор книги
     
     @Nullable
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // @JoinColumn(name = "genre_id")
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<GenreModel> genres; //Жанры книги
     
     private String description; // описание книги

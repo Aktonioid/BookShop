@@ -15,7 +15,7 @@ public class GenreModelDto
 {
     private UUID id;
     
-    private String genreName;
+    private String name;
 
     public GenreModelDto(UUID id)
     {

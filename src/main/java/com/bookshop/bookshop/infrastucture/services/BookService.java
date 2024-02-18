@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.bookshop.bookshop.core.coreRepositories.IBookRepo;
 import com.bookshop.bookshop.core.coreServices.IBookService;
@@ -15,6 +16,7 @@ import com.bookshop.bookshop.core.mappers.GenreModelMapper;
 import com.bookshop.bookshop.dtos.BookModelDto;
 import com.bookshop.bookshop.dtos.GenreModelDto;
 
+@Service
 public class BookService implements IBookService 
 {
 

@@ -7,7 +7,7 @@ import com.bookshop.bookshop.core.models.OrderModel;
 
 public interface IOrderRepo 
 {
-    public List<OrderModel> GetAllOrders(); // для тестов
+    public List<OrderModel> GetAllOrdersByPage(int page); // для тестов
     public OrderModel GetOrderById(UUID id);
     public List<OrderModel> GetOrdersByUserId(UUID userId, int page);
     public boolean CreateOrder(OrderModel model);

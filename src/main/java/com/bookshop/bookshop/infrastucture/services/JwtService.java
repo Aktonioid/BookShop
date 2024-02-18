@@ -19,7 +19,9 @@ import com.bookshop.bookshop.core.coreServices.IJwtService;
 import com.bookshop.bookshop.core.models.UserModel;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.SignatureException;
 
 @PropertySource("security.properties")
 @Service
@@ -28,6 +30,8 @@ public class JwtService implements IJwtService
     @Autowired
     Environment env;
 
+    //вероятно сделаю так, чтоб если что просто в одном месте менять
+    public static long refreshTokenExpitaion = 1000 * 60 * 60 *24 * 7; 
 
     @Override
     public String ExtractUserName(String token) 
@@ -38,58 +42,91 @@ public class JwtService implements IJwtService
     @Override
     public String ExtractEmail(String token) 
     {
-        return ExrtactAllClaims(token).get("email").toString();
+        return ExtractAllClaims(token, env.getProperty("jwt.secret")).get("email").toString();
     }
 
     @Override
     public String ExtractId(String token)
     {
-        return ExrtactAllClaims(token).get("id").toString();
+        return ExtractAllClaims(token, env.getProperty("jwt.secret")).get("id").toString();
     }
 
     @Override
-    public String GenerateAccessToken(UserModel user) 
+    public String ExtractTokenId(String token) 
     {
-        Map<String, Object> claims = new HashMap<>();
+        return ExtractAllClaims(token, env.getProperty("jwt.secret")).get("token_id").toString();
+    }
+
+    @Override
+    public String GenerateAccessToken(UserModel user, UUID tokenId) 
+    {
+        Map<String, Object> claims = new HashMap<>(); // claims
 
         claims.put("id", user.getId());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
+        claims.put("token_id", tokenId);
 
-        return GenerateToken(claims, user);
+        return GenerateToken(claims, 
+                            user, 
+                            new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24), // токен валиден сутки 
+                            GetKey(env.getProperty("jwt.secret"))
+                            );
+    }
+
+    @Override
+    public String GenerateRefreshToken(UserModel user, UUID tokenId) 
+    {
+        Map<String, Object> claims = new HashMap<>(); // claims
+
+        claims.put("username", user.getUsername());
+        claims.put("token_id", tokenId);
+
+        return GenerateToken(claims,
+                            user, 
+                            new Date(System.currentTimeMillis() + refreshTokenExpitaion), //токен будет валиден неделю 
+                            GetKey(env.getProperty("refresh.secret")));
     }
 
     @Override
     public boolean IsTokenValid(String token, UserModel user) 
     {
         final String username = ExtractUserName(token);
-            
+
         return (username.equals(user.getUsername())) && !IsTokenExpired(token); 
     }
     
-    @Override
-    public String GenerateRefreshToken(UserModel user, UUID tokenId) 
-    {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'GenerateRefreshToken'");
-    }
 
     @Override
+    // проверка подписи
     public boolean IsTokenValidNoTime(String token) 
     {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'IsTokenValidNoTime'");
+
+        try
+        {
+           ExtractAllClaims(token, env.getProperty("jwt.secret"));
+        }
+        catch(SignatureException e)
+        {
+            return false;
+        }
+        catch(ExpiredJwtException e)
+        {
+
+        }
+
+        return true;
     }
 
 
 
-
-    private String GenerateToken(Map<String, Object> extraClaims, UserModel user)
+    private String GenerateToken(Map<String, Object> extraClaims, UserModel user,
+                                Date expirationDate, SecretKey key)
     {
         return Jwts.builder().claims(extraClaims).subject(user.getUsername())
                     .issuedAt(new Date())
-                    .expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
-                    .signWith(GetKey(), Jwts.SIG.HS512)
+                    .expiration(expirationDate)
+                    .signWith(key, Jwts.SIG.HS512)
                     .compact();
     }
     
@@ -97,19 +134,20 @@ public class JwtService implements IJwtService
 
     private <T> T ExtractClaims(String token, Function<Claims, T> claimsResolver)
     {
-        final Claims claims = ExrtactAllClaims(token);
+        final Claims claims = ExtractAllClaims(token, env.getProperty("jwt.secret"));
         return claimsResolver.apply(claims);
     }
 
-    private Claims ExrtactAllClaims(String string)
+    private Claims ExtractAllClaims(String string, String secret)
     {
-        return Jwts.parser().verifyWith(GetKey()).build().parseSignedClaims(string).getPayload();
+        return Jwts.parser().verifyWith(GetKey(secret)).build().parseSignedClaims(string).getPayload();
     }
 
-    private SecretKey GetKey()
+    
+    private SecretKey GetKey(String secret)
     {
         return new SecretKeySpec(
-            Base64.getDecoder().decode(env.getProperty("jwt.secret")), 
+            Base64.getDecoder().decode(secret), 
             "HmacSHA512");
     }
 
@@ -122,6 +160,8 @@ public class JwtService implements IJwtService
     {
         return ExtractClaims(token, Claims::getExpiration);
     }
+
+
 
     
 }
