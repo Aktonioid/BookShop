@@ -1,8 +1,12 @@
 package com.bookshop.bookshop.infrastucture.services;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.Async;
@@ -15,6 +19,8 @@ import com.bookshop.bookshop.core.coreServices.IUserService;
 import com.bookshop.bookshop.core.mappers.UserModelMapper;
 import com.bookshop.bookshop.core.models.UserModel;
 import com.bookshop.bookshop.dtos.UserModelDto;
+
+
 
 @EnableAsync(proxyTargetClass = true)
 @Service
@@ -42,8 +48,8 @@ public class UserService implements IUserService
     @Async
     public CompletableFuture<Boolean> UpdateUser(UserModelDto model) // хз как правильно сделать это
     {
-        throw new UnsupportedOperationException("Unimplemented method 'UpdateUser'");
-        // return CompletableFuture.completedFuture(userRepo.UpdateUser(UserModelMapper.AsEntity(model)));
+        // throw new UnsupportedOperationException("Unimplemented method 'UpdateUser'");
+        return CompletableFuture.completedFuture(userRepo.UpdateUser(UserModelMapper.AsEntity(model)));
     }
 
     @Override
@@ -92,6 +98,38 @@ public class UserService implements IUserService
     private UserModel ForUserDetailService(String username)
     {
         return userRepo.UserByUsername(username);
+    }
+
+
+    @Override
+    @Async
+    // возвращает string только для тестов, чтоб я пока не прикрутил отправку пароля на почту чтоб я просто пароль знал
+    public CompletableFuture<UserModelDto> GenerateNewPassword(String username) 
+    {
+        UserModel userModel = userRepo.UserByUsername(username);
+
+        if(userModel == null)
+        {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        String newPassword = RandomStringUtils.randomAlphanumeric(20);
+
+        userModel.setPassword(newPassword);
+
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(userModel));
+    }
+
+    @Override
+    public CompletableFuture<List<UserModelDto>> GetUsersByPage(int page) 
+    {
+        List<UserModelDto> users = Collections.synchronizedList
+                                (userRepo.GetAllUsersByPage(page)
+                                .stream()
+                                .map(UserModelMapper::AsDto)
+                                .collect(Collectors.toList()));
+
+        return CompletableFuture.completedFuture(users);
     }
 
     

@@ -1,6 +1,7 @@
 package com.bookshop.bookshop.core.mappers;
 
 import java.util.stream.Collectors;
+
 import com.bookshop.bookshop.core.models.OrderModel;
 import com.bookshop.bookshop.dtos.OrderModelDto;
 
@@ -9,6 +10,11 @@ public class OrderModelMapper
 {
     public static OrderModel AsEntity(OrderModelDto dto)
     {
+        if(dto == null)
+        {
+            return null;
+        }
+
         return new OrderModel(
             dto.getId(),
             dto.isSend(),
@@ -22,6 +28,10 @@ public class OrderModelMapper
 
     public static OrderModelDto AsDto(OrderModel model)
     {
+        if(model == null)
+        {
+            return null;
+        }
         return new OrderModelDto
             (
                 model.getId(),

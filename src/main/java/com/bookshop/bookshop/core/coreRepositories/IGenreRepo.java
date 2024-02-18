@@ -13,5 +13,5 @@ public interface IGenreRepo
     public boolean CreateModel(GenreModel model);
     public boolean UpdateModel(GenreModel model);
     public boolean DeleteModelById(UUID id);
-
+    public boolean IsGenreExhistsByName(String genreName);
 }

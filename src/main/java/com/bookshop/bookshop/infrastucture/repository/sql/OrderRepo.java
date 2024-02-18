@@ -27,8 +27,10 @@ public class OrderRepo implements IOrderRepo
     SessionFactory sessionFactory;
 
     @Override
-    public List<OrderModel> GetAllOrders() 
+    public List<OrderModel> GetAllOrdersByPage(int page) 
     {
+        int pageSize = 20;
+
         Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -36,7 +38,13 @@ public class OrderRepo implements IOrderRepo
         Root<OrderModel> root = cq.from(OrderModel.class);
 
         cq.select(root);
-        List<OrderModel> orderModels = session.createQuery(cq).getResultList();
+
+        Query<OrderModel> query = session.createQuery(cq);
+        
+        query.setFirstResult((page - 1) * pageSize);
+        query.setMaxResults(pageSize);
+
+        List<OrderModel> orderModels = query.getResultList();
 
         session.close();
         return orderModels;

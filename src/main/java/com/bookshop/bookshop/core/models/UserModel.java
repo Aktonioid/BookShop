@@ -4,11 +4,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.type.YesNoConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -37,11 +39,20 @@ public class UserModel implements UserDetails
     @Column(name = "user_surname")
     private String userSurname;
 
+    @Column
     private String email;
+    @Column
     private String password;
+
+    @Column(name = "verification_code")
+    private String verificationCode;
 
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @Column(name = "is_email_verificated")
+    @Convert(converter = YesNoConverter.class)
+    private boolean isEmailVerificated;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() 

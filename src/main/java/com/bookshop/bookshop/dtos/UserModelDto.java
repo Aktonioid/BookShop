@@ -26,5 +26,8 @@ public class UserModelDto
     private String email;
     private String password;
 
+    private String veridficationCode;
+
     private Role role;
+    private boolean isEmailVerificated;
 }

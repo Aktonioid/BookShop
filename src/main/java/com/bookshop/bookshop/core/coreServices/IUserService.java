@@ -1,6 +1,7 @@
 package com.bookshop.bookshop.core.coreServices;
 
 import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,5 +17,7 @@ public interface IUserService
     public CompletableFuture<Boolean> CreateUser(UserModelDto model);
     public CompletableFuture<Boolean> UpdateUser(UserModelDto model);
     public CompletableFuture<Boolean> DeleteUserById(UUID id);
+    public CompletableFuture<UserModelDto> GenerateNewPassword(String username);
+    public CompletableFuture<List<UserModelDto>> GetUsersByPage(int page);
 
 }

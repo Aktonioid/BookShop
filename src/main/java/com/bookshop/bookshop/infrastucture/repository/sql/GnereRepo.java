@@ -31,7 +31,7 @@ public class GnereRepo implements IGenreRepo
     @Override
     public List<GenreModel> GetAllGenres() 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<GenreModel> cq = cb.createQuery(GenreModel.class);
@@ -39,14 +39,17 @@ public class GnereRepo implements IGenreRepo
 
         cq.select(root);
 
+        List<GenreModel> models = Collections.synchronizedList(new ArrayList<GenreModel>(session.createQuery(cq).getResultList()));
 
-        return Collections.synchronizedList(new ArrayList<GenreModel>(session.createQuery(cq).getResultList()));
+        session.close();
+
+        return models;
     }
 
     @Override
     public GenreModel GetGenreById(UUID id) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<GenreModel> cq = cb.createQuery(GenreModel.class);
@@ -54,13 +57,17 @@ public class GnereRepo implements IGenreRepo
 
         cq.select(root).where(root.get("id").in(id));
 
-        return session.createQuery(cq).uniqueResult();
+        GenreModel model = session.createQuery(cq).uniqueResult(); 
+        
+        session.close();
+
+        return model;  
     }
 
     @Override
     public boolean CreateModel(GenreModel model) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         try
@@ -68,19 +75,29 @@ public class GnereRepo implements IGenreRepo
             transaction.begin();
             session.persist(model);
             transaction.commit();
-        }
+        }   
         catch(HibernateException e)
         {
             e.printStackTrace();
             transaction.rollback();
             return false;
         }
+        catch(Exception e)
+        {
+            transaction.rollback();
+            session.close();
+            throw e;
+        }
+
+        session.close();
+
         return true;
     }
 
     @Override
-    public boolean UpdateModel(GenreModel model) {
-        Session session = sessionFactory.getCurrentSession();
+    public boolean UpdateModel(GenreModel model) 
+    {
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         try
@@ -88,19 +105,28 @@ public class GnereRepo implements IGenreRepo
             transaction.begin();
             session.merge(model);
             transaction.commit();
-        }
+        }   
         catch(HibernateException e)
         {
             e.printStackTrace();
             transaction.rollback();
             return false;
         }
+        catch(Exception e)
+        {
+            transaction.rollback();
+            session.close();
+            throw e;
+        }
+
+        session.close();
+
         return true;
     }
 
     @Override
     public boolean DeleteModelById(UUID id) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -123,7 +149,41 @@ public class GnereRepo implements IGenreRepo
             transaction.rollback();
             return false;
         }
+        catch(Exception e)
+        {
+            transaction.rollback();
+            session.close();
+            throw e;
+        }
+
+        session.close();
+
         return true;
+    }
+
+    @Override
+    public boolean IsGenreExhistsByName(String genreName) 
+    {
+        boolean isExhists = false;
+
+        Session session = sessionFactory.openSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<GenreModel> cq = cb.createQuery(GenreModel.class);
+        Root<GenreModel> root = cq.from(GenreModel.class);
+
+        cq.select(root).where(root.get("name").in(genreName));
+
+        GenreModel model = session.createQuery(cq).uniqueResult();
+
+        if(model != null)
+        {
+            isExhists = true;
+        }
+        
+        session.close();
+
+        return isExhists;
     }
     
 }

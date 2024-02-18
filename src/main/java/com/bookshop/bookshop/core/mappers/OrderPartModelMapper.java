@@ -8,6 +8,11 @@ public class OrderPartModelMapper
 {
     public static OrderPartModelDto AsDto(OrderPartModel model)
     {
+        if(model == null)
+        {
+            return null;
+        }
+
         return new OrderPartModelDto(
                     model.getId(), 
                     BookModelMapper.AsDto(model.getBook()), 
@@ -17,6 +22,11 @@ public class OrderPartModelMapper
 
     public static OrderPartModel AsEntity(OrderPartModelDto dto)
     {
+        if(dto == null)
+        {
+            return null;
+        }
+        
         return new OrderPartModel
                     (
                         dto.getId(),

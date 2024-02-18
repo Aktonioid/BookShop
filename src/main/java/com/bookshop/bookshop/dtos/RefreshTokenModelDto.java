@@ -1,6 +1,6 @@
 package com.bookshop.bookshop.dtos;
 
-import java.util.List;
+import java.util.Date;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -12,14 +12,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CrateModelDto 
+public class RefreshTokenModelDto 
 {
     private UUID id;
-
-    List<CratePartModelDto> books;
-
-    public CrateModelDto(UUID id)
-    {
-        this.id = id;
-    }
+    private String token;
+    private Date expiredDate;    
 }

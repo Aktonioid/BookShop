@@ -38,3 +38,4 @@ out/
 
 databaseConnection.properties
 security.properties
+email.properties

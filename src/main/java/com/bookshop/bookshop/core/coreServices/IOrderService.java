@@ -8,7 +8,7 @@ import com.bookshop.bookshop.dtos.OrderModelDto;
 
 public interface IOrderService 
 {
-    public CompletableFuture<List<OrderModelDto>> GetAllOrders();
+    public CompletableFuture<List<OrderModelDto>> GetAllOrdersByPage(int page);
     public CompletableFuture<List<OrderModelDto>> GetOrdersByUserId(UUID userId, int page);
     public CompletableFuture<OrderModelDto> GetOrderById(UUID id);
     public CompletableFuture<Boolean> CreateOrder(OrderModelDto model);

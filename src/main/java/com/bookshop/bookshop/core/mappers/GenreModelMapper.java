@@ -10,7 +10,7 @@ public class GenreModelMapper
     {
         return new GenreModel(
             dto.getId(),
-            dto.getGenreName()
+            dto.getName()
         );
     }
 
@@ -20,6 +20,7 @@ public class GenreModelMapper
             model.getId(),
             model.getName()
         );
+
     }
     
 }

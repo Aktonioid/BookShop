@@ -27,10 +27,10 @@ public class CreateService implements ICrateService
 
     @Override
     @Async
-    public CompletableFuture<CrateModelDto> GetCrateByUserId(UUID id) 
+    public CompletableFuture<CrateModelDto> GetCrateById(UUID id) 
     {
         return CompletableFuture.completedFuture(
-            CrateModelMapper.AsDto(crateRepo.GetCrateByUserId(id))
+            CrateModelMapper.AsDto(crateRepo.GetCrateById(id))
         );
     }
 
@@ -49,6 +49,7 @@ public class CreateService implements ICrateService
     @Async
     public CompletableFuture<Boolean> CreateCrate(CrateModelDto crateDto) 
     {
+        System.out.println("Crate creation");
         return CompletableFuture.completedFuture(
             crateRepo.CreateCrate(CrateModelMapper.AsEntity(crateDto))
         );
@@ -87,7 +88,7 @@ public class CreateService implements ICrateService
     {
         return CompletableFuture.completedFuture
         (
-            crateRepo.DeleteCrateByUserId(userId)
+            crateRepo.DeleteCrateById(userId)
         );
     }
     

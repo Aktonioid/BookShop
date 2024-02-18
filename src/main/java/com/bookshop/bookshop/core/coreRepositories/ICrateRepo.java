@@ -8,11 +8,11 @@ import com.bookshop.bookshop.core.models.CratePartModel;
 
 public interface ICrateRepo 
 {
-    public CrateModel GetCrateByUserId(UUID id);
+    public CrateModel GetCrateById(UUID id);
     public List<CrateModel> GetAllCrateModels(); //Удалю потом. Просто для тестов сдеал
     public boolean CreateCrate(CrateModel crateModel);
     public boolean AddBookToCrate(CratePartModel part, UUID userId); // сча посмотрю мб понадобится
     public boolean AddBookCount(UUID partId);
     public boolean UpdateCrate(CrateModel crateModel);
-    public boolean DeleteCrateByUserId(UUID userId); 
+    public boolean DeleteCrateById(UUID userId); 
 }
