@@ -38,3 +38,4 @@ out/
 
 databaseConnection.properties
 security.properties
+src/main/java/com/bookshop/bookshop/infrastucture/controllers/AdminController.java
