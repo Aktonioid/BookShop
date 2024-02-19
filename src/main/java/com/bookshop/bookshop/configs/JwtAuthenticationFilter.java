@@ -59,12 +59,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
         }
         catch(ExpiredJwtException e)
         {
-            response.sendError(403, "token expired");
+            // response.sendError(403, "token expired");
+            filterChain.doFilter(request, response);
             return;
         }
         catch(SignatureException e)
         {
-            response.sendError(403, "token not valid");
+            // response.sendError(403, "token not valid");
+            filterChain.doFilter(request, response);
             return;
         }
         

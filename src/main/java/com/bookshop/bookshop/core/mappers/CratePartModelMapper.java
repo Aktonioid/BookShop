@@ -8,6 +8,11 @@ public class CratePartModelMapper
 {
     public static CratePartModel AsEntity(CratePartModelDto dto)
     {
+        if(dto == null)
+        {
+            return null;
+        }
+
         return new CratePartModel
         (
             dto.getId(),
@@ -19,6 +24,11 @@ public class CratePartModelMapper
 
     public static CratePartModelDto AsDto(CratePartModel model)
     {
+        if(model == null)
+        {
+            return null;
+        }
+
         return new CratePartModelDto
         (
             model.getId(),

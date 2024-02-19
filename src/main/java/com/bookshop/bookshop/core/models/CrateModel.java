@@ -22,10 +22,7 @@ import lombok.Setter;
 public class CrateModel 
 {
     @Id
-    private UUID id;     
-    
-    @JoinColumn(name = "user_id")
-    private UserModel userId;
+    private UUID id; // id корзины - это id пользователя
 
     @OneToMany
     @JoinColumn(name = "part_id")

@@ -32,12 +32,12 @@ public class AuthenticationService implements IAuthenticationService
     {
         StringBuffer sb = new StringBuffer();
 
-        if(userRepo.IsUserExhistsByEmail(model.getEmail()))
+        if(!userRepo.IsUserExhistsByEmail(model.getEmail()))
         {
             sb.append("email"); // пользователь с таким email уже существует
         }
 
-        if(userRepo.IsUserExhistsByUsername(model.getUsername()))
+        if(!userRepo.IsUserExhistsByUsername(model.getUsername()))
         {
             sb.append("username");// пользователь с таким username уже существует
         }
@@ -47,7 +47,7 @@ public class AuthenticationService implements IAuthenticationService
             return CompletableFuture.completedFuture(sb.toString());
         }
 
-        return null; // то что тут null возвращается - нормально
+        return CompletableFuture.completedFuture("");
     }
     
     @Async
@@ -55,19 +55,15 @@ public class AuthenticationService implements IAuthenticationService
     public CompletableFuture<Boolean> SignInByLogin(LogInModel login) 
     {
         UserModel userModel = userRepo.UserByUsername(login.getLogin());
-        // System.out.println(login.getLogin());
-        // System.out.println(userModel == null);
 
         if(userModel == null)
         {
-            // System.out.println("model is null");
             return CompletableFuture.completedFuture(false); // пользователя с таким username нет в бд
         }
 
         // Проверка пароля
         if(encoder.matches(login.getPassword(), userModel.getPassword()))
         {
-            // System.out.println("password is incorrect");
             return CompletableFuture.completedFuture(false);    
         }
 

@@ -10,6 +10,11 @@ public class BookModelMapper
 
     public static BookModel AsEntity(BookModelDto dto) 
     {
+        if(dto == null)
+        {
+            return null;
+        }
+
         return new BookModel(
             dto.getId(),
             dto.getBookName(),
@@ -28,6 +33,11 @@ public class BookModelMapper
 
     public static BookModelDto AsDto(BookModel model) 
     {
+        if(model == null)
+        {
+            return null;
+        }
+
         return new BookModelDto(
                     model.getId(),
                     model.getBookName(),

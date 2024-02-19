@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import io.micrometer.common.lang.Nullable;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,8 +39,7 @@ public class BookModel
     private String isbn; //Уникальный идентификатор книги
     
     @Nullable
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // @JoinColumn(name = "genre_id")
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<GenreModel> genres; //Жанры книги
     
     private String description; // описание книги

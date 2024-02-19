@@ -7,6 +7,11 @@ public class UserModelMapper
 {
     public static UserModel AsEntity(UserModelDto dto)
     {
+        if(dto == null)
+        {
+            return null;
+        }
+
         return new UserModel(
             dto.getId(), 
             dto.getUsername(), 
@@ -14,11 +19,18 @@ public class UserModelMapper
             dto.getUserSurname(), 
             dto.getEmail(), 
             dto.getPassword(), 
-            dto.getRole());
+            dto.getVeridficationCode(),
+            dto.getRole(),
+            dto.isEmailVerificated());
     }    
 
     public static UserModelDto AsDto(UserModel model)
     {
+        if(model == null)
+        {
+            return null;
+        }
+
         return new UserModelDto(
             model.getId(),
             model.getUsername(),
@@ -26,7 +38,9 @@ public class UserModelMapper
             model.getUserSurname(),
             model.getEmail(),
             model.getPassword(),
-            model.getRole()
+            model.getVerificationCode(),
+            model.getRole(),
+            model.isEmailVerificated()
         );
     }
 }

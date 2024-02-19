@@ -13,4 +13,5 @@ public interface IGenreService
     public CompletableFuture<Boolean> CreateModel(GenreModelDto model);
     public CompletableFuture<Boolean> UpdateModel(GenreModelDto model);
     public CompletableFuture<Boolean> DeleteModelById(UUID id);
+    public CompletableFuture<Boolean> IsGenreExhistsByName(String genreName);
 }

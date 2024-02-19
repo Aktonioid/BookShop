@@ -10,14 +10,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "refreshTokens")
 @Getter
 @Setter
-public class RefreshToken 
+@AllArgsConstructor
+@NoArgsConstructor
+public class RefreshTokenModel 
 {
     @Id
     private UUID id; // id записи(токена) гененрируется при создании пары 
@@ -28,5 +32,6 @@ public class RefreshToken
     @Basic
     private Date expiredDate; // дата когда токен истекает
 
+    @Column(name = "refresh_token", columnDefinition = "TEXT")
     private String token;
 }

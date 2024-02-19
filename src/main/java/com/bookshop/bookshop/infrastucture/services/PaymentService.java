@@ -1,14 +1,16 @@
 package com.bookshop.bookshop.infrastucture.services;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.bookshop.bookshop.core.coreRepositories.IUserRepo;
 import com.bookshop.bookshop.core.coreServices.IPaymentService;
-import com.bookshop.bookshop.dtos.UserModelDto;
+import com.bookshop.bookshop.core.models.UserModel;
 
 @Service
 //Это !!!симуляция сервиса оплаты не более!!!
@@ -17,6 +19,8 @@ public class PaymentService implements IPaymentService
 
     @Autowired
     PasswordEncoder encoder;
+    @Autowired
+    IUserRepo userRepo;
 
     @Override
     @Async
@@ -33,8 +37,9 @@ public class PaymentService implements IPaymentService
 
     @Async
     //для создания симуляции токена просто из инфы пользователя я беру инфу для создания(id, username, email)
-    public CompletableFuture<String> CreateToken(UserModelDto userModel)
+    public CompletableFuture<String> CreateToken(UUID userId)
     {
+        UserModel userModel = userRepo.UserById(userId);
         StringBuffer sb = new StringBuffer();
         sb.append(userModel.getId().toString());
         sb.append(userModel.getUsername());

@@ -26,12 +26,12 @@ public class OrderService implements IOrderService
 
     @Override
     @Async
-    public CompletableFuture<List<OrderModelDto>> GetAllOrders() 
+    public CompletableFuture<List<OrderModelDto>> GetAllOrdersByPage(int page) 
     {
         return CompletableFuture.completedFuture(
             Collections.synchronizedList
                 (
-                    orderRepo.GetAllOrders()
+                    orderRepo.GetAllOrdersByPage(page)
                         .stream()
                         .map(OrderModelMapper::AsDto)
                         .collect(Collectors.toList())

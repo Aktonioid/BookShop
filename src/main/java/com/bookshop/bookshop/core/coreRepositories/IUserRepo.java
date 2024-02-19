@@ -1,5 +1,6 @@
 package com.bookshop.bookshop.core.coreRepositories;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.bookshop.bookshop.core.models.UserModel;
@@ -14,4 +15,5 @@ public interface IUserRepo
     public boolean UpdateUser(UserModel userModel);
     public boolean IsUserExhistsByEmail(String email);
     public boolean IsUserExhistsByUsername(String username);
+    public List<UserModel> GetAllUsersByPage(int page); // для админ панели
 }
