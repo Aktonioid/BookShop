@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bookshop.bookshop.core.coreServices.IBookService;
 import com.bookshop.bookshop.core.coreServices.IGenreService;
@@ -43,8 +45,22 @@ public class AdminController
     //
 
     @PostMapping("/books")
-    public ResponseEntity<String> CreateBook(@RequestBody BookModelDto model) throws InterruptedException, ExecutionException
+    public ResponseEntity<String> CreateBook(@RequestPart(name = "book", required = true) BookModelDto model,
+                                             @RequestPart(name = "cover", required = false) MultipartFile file
+                                            ) throws InterruptedException, ExecutionException
     {
+        String bookCover = "";
+
+        if(file == null)// Проверка на то что есть что сохранять
+        {
+            bookCover = bookService.SaveBookCover(file).get();
+        }
+
+        if(!bookCover.equals("")) // проверяем было ли что сохранять
+        {
+            model.setPictureUrl(bookCover);
+        }
+
         boolean isBookCreate = bookService.CreateModel(model).get();
 
         if(!isBookCreate)
@@ -53,6 +69,35 @@ public class AdminController
         }
 
         return ResponseEntity.ok("Created");
+    }
+
+    public ResponseEntity<String> UpdateBook(@RequestPart(name = "book", required = true) BookModelDto model,
+                                            @RequestPart(name = "cover", required = false) MultipartFile file
+                                            ) throws InterruptedException, ExecutionException
+    {
+        // проверка на то что такая модель вообще есть
+        if(bookService.GetBookModelById(model.getId()).get() == null)
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        String bookCover = "";
+        if(file != null) // Проверка на то что есть что сохранять
+        {
+            bookCover = bookService.SaveBookCover(file).get();
+        }
+        
+        if(!bookCover.equals("")) // проверяем было ли что сохранять
+        {
+            model.setPictureUrl(bookCover);
+        }
+
+        if(!bookService.UpdateModel(model).get())
+        {
+            return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
+        }
+
+        return ResponseEntity.ok("updated");
     }
 
     @DeleteMapping("/books")
