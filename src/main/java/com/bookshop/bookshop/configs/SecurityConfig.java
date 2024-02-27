@@ -50,7 +50,16 @@ public class SecurityConfig
         
         // насройка аутентификации пользователей 
         http.authorizeHttpRequests(req ->req
-            .requestMatchers("/test/secured").hasAnyRole("USER","ADMIN")
+            .requestMatchers("/test/secured").hasAnyRole("USER","ADMIN") 
+            .requestMatchers("/admin").hasRole("ADMIN")// роут админ панели
+            .requestMatchers("/crate").hasAnyRole("USER","ADMIN") // корзина
+            .requestMatchers("/email").hasAnyRole("USER","ADMIN") // отправка сообщений
+            .requestMatchers("/orders").hasAnyRole("USER","ADMIN") // заказы
+            .requestMatchers("/users/").hasAnyRole("USER","ADMIN") // страница пользователя
+            .requestMatchers("/users/logout").hasAnyRole("USER","ADMIN")// разлогинивание
+            .requestMatchers("/users/delete").hasAnyRole("USER","ADMIN")// удаление пользователя только, если он вошел
+            .requestMatchers("/users/update").hasAnyRole("USER","ADMIN")// обновление инфы пользователя
+            .requestMatchers("/users/update/password").hasAnyRole("USER","ADMIN") // обновление пароля
             .anyRequest().permitAll()
             );
         

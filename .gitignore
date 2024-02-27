@@ -36,6 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-databaseConnection.properties
-security.properties
-email.properties
+# databaseConnection.properties
+# security.properties
+# email.properties

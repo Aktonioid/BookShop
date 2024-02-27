@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
 
         
 
-        System.out.println(authHeader);
+        // System.out.println(authHeader);
         String jwt = authHeader.substring(BEARER_PREFIX.length());
         String username = "";
 

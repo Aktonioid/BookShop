@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -44,14 +45,15 @@ public class AdminController
     // работа с книгами
     //
 
+    // создание книги
     @PostMapping("/books")
     public ResponseEntity<String> CreateBook(@RequestPart(name = "book", required = true) BookModelDto model,
-                                             @RequestPart(name = "cover", required = false) MultipartFile file
+                                             @RequestPart(value = "file", required = false) MultipartFile file
                                             ) throws InterruptedException, ExecutionException
     {
         String bookCover = "";
 
-        if(file == null)// Проверка на то что есть что сохранять
+        if(file != null)// Проверка на то что есть что сохранять
         {
             bookCover = bookService.SaveBookCover(file).get();
         }
@@ -71,6 +73,8 @@ public class AdminController
         return ResponseEntity.ok("Created");
     }
 
+    @PutMapping("/books")
+    // обновить информацию по книге
     public ResponseEntity<String> UpdateBook(@RequestPart(name = "book", required = true) BookModelDto model,
                                             @RequestPart(name = "cover", required = false) MultipartFile file
                                             ) throws InterruptedException, ExecutionException
@@ -100,6 +104,7 @@ public class AdminController
         return ResponseEntity.ok("updated");
     }
 
+    //удаление книги
     @DeleteMapping("/books")
     public ResponseEntity<String> DeleteBookById(UUID bookId) throws InterruptedException, ExecutionException
     {
@@ -120,6 +125,7 @@ public class AdminController
     //Работа с жанрами
     //
 
+    // создание жанра
     @PostMapping("/genres")
     public ResponseEntity<String> CreateGenre(@RequestBody GenreModelDto genreModel) throws InterruptedException, ExecutionException
     {
@@ -146,6 +152,7 @@ public class AdminController
         return ResponseEntity.ok("successful");
     }
 
+    //удаление жанра
     @DeleteMapping("/genres")
     public ResponseEntity<String> DeleteGenreById(UUID genreId) throws InterruptedException, ExecutionException
     {
@@ -163,6 +170,7 @@ public class AdminController
     // Работа с пользователями
     //
 
+    //Принудительное удаление пользователя
     @DeleteMapping("/users")
     public ResponseEntity<String> DeleteUserById(UUID userId) throws InterruptedException, ExecutionException
     {
@@ -182,6 +190,7 @@ public class AdminController
         return ResponseEntity.ok("");
     }
 
+    // получение списка всех юзеров
     @GetMapping("/users/{page}")
     public ResponseEntity<List<UserModelDto>> GetUsersByPage(@PathVariable("page") int page) throws InterruptedException, ExecutionException
     {
@@ -194,6 +203,7 @@ public class AdminController
     //Работа с заказами
     //
 
+    //получение всех заказов всех юзеров
     @GetMapping("orders/{page}")
     public ResponseEntity<List<OrderModelDto>> GetAllOrders(@PathVariable("page") int page) throws InterruptedException, ExecutionException
     {

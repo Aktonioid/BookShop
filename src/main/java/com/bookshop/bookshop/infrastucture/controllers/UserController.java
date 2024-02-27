@@ -55,11 +55,8 @@ public class UserController
     @Autowired
     IEmailService emailService;
 
-
+    // регистрация
     @PostMapping("/register")
-    // надо подумать как создать проверку на то что определенные поля уже заняты и как это отправлять на фронт
-    // Написать объект отдельный для регистрации с boolean полями что есть,чего нет? Просто проверка на заполненность полей делается на фронте
-    // хотя проверку на то что все обязательные поля заполнены тож надо сделать
     public ResponseEntity<String> UserRegistration(@RequestBody UserModelDto userModel, HttpServletResponse response) throws InterruptedException, ExecutionException // мб надо прописать отдельный класс для ответов, так как токен одни хрен в куках пищется
 , MessagingException
     {
@@ -117,6 +114,7 @@ public class UserController
         return ResponseEntity.ok(accessToken+"\n\n "+userId.toString());
     }
 
+    // вход в аккаунт по почте
     @PostMapping("/login/email")
     public ResponseEntity<String> LogInByEmail(@RequestBody LogInModel model, HttpServletResponse response) throws InterruptedException, ExecutionException
     {
@@ -156,6 +154,7 @@ public class UserController
         return ResponseEntity.ok(accessToken);
     }
 
+    // вход по username
     @PostMapping("/login/username")
     public ResponseEntity<String> LogInByUsername(@RequestBody LogInModel model, HttpServletResponse response) throws InterruptedException, ExecutionException
     {
@@ -192,13 +191,15 @@ public class UserController
 
         return ResponseEntity.ok(accessToken);
     }
-
-    @GetMapping("/user")
+    
+    // получение пользователя по username
+    @GetMapping("/")
     public ResponseEntity<UserModelDto> GetUserByUsername(String username) throws InterruptedException, ExecutionException
     {
         return ResponseEntity.ok(userService.GetUserByUserName(username).get());
     }
 
+    // получение новой пары access и refresh токена
     @PostMapping("/refresh")
     public ResponseEntity<String> RefreshAccessToken(String refreshToken ,
                                                     @RequestHeader("Authorization")String token, 
@@ -306,6 +307,7 @@ public class UserController
         return ResponseEntity.ok(accessToken);
     }
 
+    // отправка сообщения с новым паролем на почту
     @PostMapping("/forgot")
     public ResponseEntity<String> ForgotPassword(String username) throws InterruptedException, ExecutionException, MessagingException
     {
@@ -322,6 +324,7 @@ public class UserController
         return ResponseEntity.ok(password); // потом уберу
     }
 
+    // выход из аккаунта
     @PostMapping("/logout")
     public ResponseEntity<String> LogOut(String accessToken, HttpServletResponse response)
     {
@@ -343,7 +346,8 @@ public class UserController
 
         return ResponseEntity.ok("logged out");
     }
-
+    
+    // удаление аккаунта
     @DeleteMapping("/delete")
     public ResponseEntity<String> DeleteUserById(String accessToken) throws InterruptedException, ExecutionException
     {

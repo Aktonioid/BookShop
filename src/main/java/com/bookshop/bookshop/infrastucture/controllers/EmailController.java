@@ -43,6 +43,7 @@ public class EmailController
         return ResponseEntity.ok("отправлено");
     }
 
+    // подтверждение email по id пользователя
     @PostMapping("verify/{id}")
     public ResponseEntity<String> CheckEmailVerification(@PathVariable(name = "id") UUID userId, String verificationCode) throws InterruptedException, ExecutionException
     {

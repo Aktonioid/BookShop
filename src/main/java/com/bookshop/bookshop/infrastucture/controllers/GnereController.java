@@ -22,12 +22,14 @@ public class GnereController
     @Autowired
     IGenreService genreService;
 
+    // получаем все жанры
     @GetMapping("/")
     public ResponseEntity<List<GenreModelDto>> GetAllGenres() throws InterruptedException, ExecutionException
     {
         return ResponseEntity.ok(genreService.GetAllGenres().get());
     }
 
+    // получаем жанр по id
     @GetMapping("/{genreId}")
     public ResponseEntity<GenreModelDto> GetGenreById(@PathVariable(name = "genreId") UUID genreId)
     {

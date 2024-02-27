@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserModelDto 
 {
-    UUID id;    
+    private UUID id;    
 
     private String username;
     

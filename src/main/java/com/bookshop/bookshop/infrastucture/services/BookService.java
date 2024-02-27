@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ public class BookService implements IBookService
     private Environment env;
 
     @Override
+    @Async
     public CompletableFuture<List<BookModelDto>> GetAllModelsByPage(int page) 
     {
         List<BookModelDto> books = Collections.synchronizedList(bookRepo.GetAllBooksByPage(page)
@@ -48,30 +50,35 @@ public class BookService implements IBookService
     }
 
     @Override
+    @Async
     public CompletableFuture<BookModelDto> GetBookModelById(UUID id) 
     {
         return CompletableFuture.completedFuture(BookModelMapper.AsDto(bookRepo.GetBookBookById(id)));
     }
 
     @Override
+    @Async
     public CompletableFuture<Boolean> CreateModel(BookModelDto model) 
     {
         return CompletableFuture.completedFuture(bookRepo.CreateBook(BookModelMapper.AsEntity(model)));
     }
 
     @Override
+    @Async
     public CompletableFuture<Boolean> DeleteModelById(UUID id) 
     {
         return CompletableFuture.completedFuture(bookRepo.DeleteBookById(id));
     }
 
     @Override
+    @Async
     public CompletableFuture<Boolean> UpdateModel(BookModelDto model) 
     {
         return CompletableFuture.completedFuture(bookRepo.UpdateBook(BookModelMapper.AsEntity(model)));
     }
 
     @Override
+    @Async
     public CompletableFuture<List<BookModelDto>> GetBooksByGenres(List<GenreModelDto> genres, int page) 
     {
         List<BookModelDto> models = Collections.synchronizedList(
@@ -85,6 +92,7 @@ public class BookService implements IBookService
     }
 
     @Override
+    @Async
     public CompletableFuture<String> SaveBookCover(MultipartFile model) 
     {
          // проверяем на то null ли поступаемый файл
@@ -125,6 +133,58 @@ public class BookService implements IBookService
         }
         
         return CompletableFuture.completedFuture(destinationPath.toString());
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<List<BookModelDto>> FindBooksByAuthor(String authorName, int page) 
+    {
+        List<BookModelDto> books = bookRepo.FindBooksByAuthor(authorName, page)
+                                            .stream()
+                                            .map(BookModelMapper::AsDto)
+                                            .collect(Collectors.toList());
+        return CompletableFuture.completedFuture(books);
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<List<BookModelDto>> FindBooksByName(String bookName, int page) 
+    {
+        List<BookModelDto> books = bookRepo.FindBooksByName(bookName, page)
+                                            .stream()
+                                            .map(BookModelMapper::AsDto)
+                                            .collect(Collectors.toList());
+        return CompletableFuture.completedFuture(books);
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<Long> GetMaxPageForAll() 
+    {
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForAll());        
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<Long> GetMaxPageForGenresSearch(List<GenreModelDto> genres) 
+    {
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForGenresSearch(genres.stream()
+                                                                    .map(GenreModelMapper::AsEntity)
+                                                                    .collect(Collectors.toList())));
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<Long> GetMaxPageForSearchByAuthor(String authorName) 
+    {
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForSearchByAuthor(authorName));
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<Long> GetMaxPageForSearchByBookName(String bookName) 
+    {
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForSearchByBookName(bookName));
     }
 
 }

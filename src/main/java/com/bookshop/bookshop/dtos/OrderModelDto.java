@@ -23,6 +23,7 @@ public class OrderModelDto
     private String userFullName;
     private String deliveryAdress;
     private boolean paymentStatus;
+    private UUID userId;
 
     public OrderModelDto(UUID id)
     {

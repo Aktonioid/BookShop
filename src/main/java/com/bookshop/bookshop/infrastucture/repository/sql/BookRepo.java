@@ -1,7 +1,5 @@
 package com.bookshop.bookshop.infrastucture.repository.sql;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +30,7 @@ public class BookRepo implements IBookRepo
     @Override
     public List<BookModel> GetAllBooksByPage(int pageNumber) 
     {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
 
         int pageSize = 20;
         CriteriaBuilder cb = session.getCriteriaBuilder();
@@ -44,7 +42,10 @@ public class BookRepo implements IBookRepo
         query.setFirstResult((pageNumber-1) * pageSize);
         query.setMaxResults(pageSize);
 
-        return Collections.synchronizedList(new ArrayList<BookModel>(query.getResultList()));
+        List<BookModel> resultList = query.getResultList();
+
+        session.close();
+        return resultList;
     }
 
     @Override
@@ -163,11 +164,166 @@ public class BookRepo implements IBookRepo
 
         Query<BookModel> query = session.createQuery(cq);
         
-        query.setFirstResult((page-1) * pageSize);
-        query.setMaxResults(pageSize);
+        query.setFirstResult((page-1) * pageSize); // задаем первую запись
+        query.setMaxResults(pageSize); // задаем максимальное колличество элементов в ответе
         
-        return Collections.synchronizedList(new ArrayList<BookModel>());
+        List<BookModel> resultList = query.getResultList();
+
+        session.close();
+        return resultList;
     }
 
-    
+    @Override
+    public List<BookModel> FindBooksByAuthor(String authorName, int page) 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+        
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<BookModel> cq = cb.createQuery(BookModel.class);
+        Root<BookModel> root = cq.from(BookModel.class);
+
+        // выбираем только те данные в которых автор начинается как authrName. По факту sql команда like
+        cq.select(root).where(cb.like(root.get("authorName"), authorName+"%"));
+        
+        Query<BookModel> query  = session.createQuery(cq);
+        query.setFirstResult((page - 1) * pageSize); // задаем первую запись
+        query.setMaxResults(pageSize); // задаем максимальное колличество элементов в ответе
+
+        List<BookModel> resultList = query.getResultList(); // сохранили все книги в список
+
+        session.close();
+        return resultList;
+    }
+
+    @Override
+    public List<BookModel> FindBooksByName(String bookName, int page) 
+    {
+        int pageSize = 20;
+        Session session = sessionFactory.openSession();
+        
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<BookModel> cq = cb.createQuery(BookModel.class);
+        Root<BookModel> root = cq.from(BookModel.class);
+
+        cq.select(root).where(cb.like(root.get("bookName"), bookName+"%"));
+
+        Query<BookModel> query = session.createQuery(cq);
+        query.setFirstResult((page - 1) * pageSize); // задаем первую запись
+        query.setMaxResults(pageSize); // задаем максимальное колличество элементов в ответе
+
+        List<BookModel> resuList = query.getResultList();
+
+        session.close();
+        return resuList;
+    }
+
+    @Override
+    public long GetMaxPageForAll() 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<BookModel> root = cq.from(BookModel.class);
+
+        cq.select(cb.count(root));
+
+        long count = session.createQuery(cq).uniqueResult(); // получаем сколько всего записей о книгах в бд
+
+        session.close();
+
+        long pagecount = count/pageSize; // считаем сколько страниц
+
+        if(count%pageSize != 0)
+        {
+            pagecount++;
+        }
+
+        return pagecount;
+    }
+
+    @Override
+    public long GetMaxPageForGenresSearch(List<GenreModel> genres) 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<BookModel> root = cq.from(BookModel.class);
+
+        cq.select(cb.count(root))
+          .where(root.get("genres").in(genres));
+
+        long count = session.createQuery(cq).uniqueResult(); // получаем сколько всего записей о книгах в бд
+
+        session.close();
+
+        long pagecount = count/pageSize; // считаем сколько страниц
+
+        if(count%pageSize != 0)
+        {
+            pagecount++;
+        }
+
+        return pagecount;
+    }
+
+    @Override
+    public long GetMaxPageForSearchByAuthor(String authrName) 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<BookModel> root = cq.from(BookModel.class);
+
+        cq.select(cb.count(root))
+          .where(cb.like(root.get("authorName"), authrName+"%"));
+
+        long count = session.createQuery(cq).uniqueResult(); // получаем сколько всего записей о книгах в бд
+
+        session.close();
+
+        long pagecount = count/pageSize; // считаем сколько страниц
+
+        if(count%pageSize != 0)
+        {
+            pagecount++;
+        }
+
+        return pagecount;
+    }
+
+    @Override
+    public long GetMaxPageForSearchByBookName(String bookName) 
+    {
+        int pageSize = 20;
+
+        Session session = sessionFactory.openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<BookModel> root = cq.from(BookModel.class);
+
+        cq.select(cb.count(root))
+          .where(cb.like(root.get("bookName"), bookName+"%"));
+
+        long count = session.createQuery(cq).uniqueResult(); // получаем сколько всего записей о книгах в бд
+
+        session.close();
+
+        long pagecount = count/pageSize; // считаем сколько страниц
+
+        if(count%pageSize != 0)
+        {
+            pagecount++;
+        }
+
+        return pagecount;
+    }
+
 }

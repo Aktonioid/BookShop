@@ -3,6 +3,7 @@ package com.bookshop.bookshop.core.mappers;
 import java.util.stream.Collectors;
 
 import com.bookshop.bookshop.core.models.OrderModel;
+import com.bookshop.bookshop.core.models.UserModel;
 import com.bookshop.bookshop.dtos.OrderModelDto;
 
 
@@ -22,7 +23,8 @@ public class OrderModelMapper
             dto.getSendDate(),
             dto.getUserFullName(),
             dto.getDeliveryAdress(),
-            dto.isPaymentStatus()
+            dto.isPaymentStatus(),
+            new UserModel(dto.getUserId())
         );
     }
 
@@ -40,7 +42,8 @@ public class OrderModelMapper
                 model.getSendDate(),
                 model.getUserFullName(),
                 model.getDeliveryAdress(),
-                model.isPaymentStatus()
+                model.isPaymentStatus(),
+                model.getUserId().getId()
             );
     }
 }

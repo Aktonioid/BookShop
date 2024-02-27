@@ -23,7 +23,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-// @AllArgsConstructor
 public class OrderModel 
 {
     @Id
@@ -66,8 +65,16 @@ public class OrderModel
             Date sendDate,
             String userFullName,
             String deliveryAdress,
-            boolean paymentStatus)
+            boolean paymentStatus,
+            UserModel userId)
             {
-                
+                this.id = id;
+                this.isSend = isSend;
+                this.books = books;
+                this.sendDate = sendDate;
+                this.userFullName = userFullName;
+                this.deliveryAdress = deliveryAdress;
+                this.paymentStatus = paymentStatus;
+                this.userId = userId;
             }
 }
