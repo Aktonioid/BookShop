@@ -2,7 +2,6 @@ package com.bookshop.bookshop.infrastucture.services;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,69 +26,53 @@ public class CreateService implements ICrateService
 
     @Override
     @Async
-    public CompletableFuture<CrateModelDto> GetCrateById(UUID id) 
+    public CrateModelDto GetCrateById(UUID id) 
     {
-        return CompletableFuture.completedFuture(
-            CrateModelMapper.AsDto(crateRepo.GetCrateById(id))
-        );
+        return CrateModelMapper.AsDto(crateRepo.GetCrateById(id));
     }
 
     @Override
     @Async
-    public CompletableFuture<List<CrateModelDto>> GetAllCrates() 
+    public List<CrateModelDto> GetAllCrates() 
     {
-        return CompletableFuture.completedFuture(
-            crateRepo.GetAllCrateModels().stream()
+        return crateRepo.GetAllCrateModels().stream()
                 .map(CrateModelMapper::AsDto)
-                .collect(Collectors.toList())
-        );        
+                .collect(Collectors.toList());        
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> CreateCrate(CrateModelDto crateDto) 
+    public boolean CreateCrate(CrateModelDto crateDto) 
     {
-        System.out.println("Crate creation");
-        return CompletableFuture.completedFuture(
-            crateRepo.CreateCrate(CrateModelMapper.AsEntity(crateDto))
-        );
+        return crateRepo.CreateCrate(CrateModelMapper.AsEntity(crateDto));
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> AddBookToCrate(CratePartModelDto part, UUID userId) 
+    public boolean AddBookToCrate(CratePartModelDto part, UUID userId) 
     {
-        return CompletableFuture.completedFuture(
-            crateRepo.AddBookToCrate(CratePartModelMapper.AsEntity(part), userId)
-        );
+        return crateRepo.AddBookToCrate(CratePartModelMapper.AsEntity(part), userId);
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> AddBookCount(UUID partId) 
+    public boolean AddBookCount(UUID partId) 
     {
-        return CompletableFuture.completedFuture(
-            crateRepo.AddBookCount(partId)
-        );
+        return crateRepo.AddBookCount(partId);
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> UpdateCrate(CrateModelDto crateDto) 
+    public boolean UpdateCrate(CrateModelDto crateDto) 
     {
-        return CompletableFuture.completedFuture(
-            crateRepo.UpdateCrate(CrateModelMapper.AsEntity(crateDto))
-        );
+        return crateRepo.UpdateCrate(CrateModelMapper.AsEntity(crateDto));
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> DeleteCrateByUserId(UUID userId) 
+    public boolean DeleteCrateByUserId(UUID userId) 
     {
-        return CompletableFuture.completedFuture
-        (
-            crateRepo.DeleteCrateById(userId)
-        );
+        return crateRepo.DeleteCrateById(userId);
     }
     
 }

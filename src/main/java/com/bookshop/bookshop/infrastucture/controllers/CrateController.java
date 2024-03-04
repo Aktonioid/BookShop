@@ -28,31 +28,31 @@ public class CrateController
     // получаем книгу по id юзера
     public ResponseEntity<CrateModelDto> GetCrateByUserId(@PathVariable UUID userId) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(crateService.GetCrateById(userId).get());
+        return ResponseEntity.ok(crateService.GetCrateById(userId));
     }
 
     @PutMapping("/addbook")
     // закидываем в корзину еще одну книгу
     public ResponseEntity<CrateModelDto> AddBookToCrate(@RequestBody CratePartModelDto part, UUID userId) throws InterruptedException, ExecutionException
     {
-        if(crateService.GetCrateById(userId).get() == null)
+        if(crateService.GetCrateById(userId) == null)
         {
            return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
         }
 
-        if(!crateService.AddBookToCrate(part, userId).get())
+        if(!crateService.AddBookToCrate(part, userId))
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(crateService.GetCrateById(userId).get());
+        return ResponseEntity.ok(crateService.GetCrateById(userId));
     }
 
     @PutMapping("/bookcount")
     // добавляем еще одну книгу в корзине(колличество одной и той же книги)
     public ResponseEntity<String> AddBookCount(UUID partId) throws InterruptedException, ExecutionException
     {
-        if(!crateService.AddBookCount(partId).get())
+        if(!crateService.AddBookCount(partId))
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +66,7 @@ public class CrateController
     public ResponseEntity<CrateModelDto> UpdateCrate(@RequestBody CrateModelDto dto) throws InterruptedException, ExecutionException
     {
 
-        if(!crateService.UpdateCrate(dto).get())
+        if(!crateService.UpdateCrate(dto))
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

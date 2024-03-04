@@ -30,7 +30,7 @@ public class EmailController
     @PostMapping("send/{id}")
     public ResponseEntity<String> SendVerificationEmail(@PathVariable(name = "id") UUID userId) throws InterruptedException, ExecutionException, MessagingException
     {   
-        UserModelDto userModel = userService.GetUserById(userId).get();
+        UserModelDto userModel = userService.GetUserById(userId);
 
         if(userModel == null)
         {
@@ -47,7 +47,7 @@ public class EmailController
     @PostMapping("verify/{id}")
     public ResponseEntity<String> CheckEmailVerification(@PathVariable(name = "id") UUID userId, String verificationCode) throws InterruptedException, ExecutionException
     {
-        UserModelDto userModel = userService.GetUserById(userId).get();
+        UserModelDto userModel = userService.GetUserById(userId);
 
         if(!userModel.getVeridficationCode().equals(verificationCode))
         {

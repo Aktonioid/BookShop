@@ -68,14 +68,8 @@ public class UserController
         // указывет на то указаны ли при регистрации уже существующие в бд email и username
         String mistakes = "";
         
-        try 
-        {
-            mistakes = authenticationService.SignUp(userModel).get();
-        } 
-        catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        
+        mistakes = authenticationService.SignUp(userModel);
 
         if(!mistakes.isEmpty())
         {
@@ -90,7 +84,7 @@ public class UserController
         userModel.setVeridficationCode(RandomStringUtils.randomAlphanumeric(10));
 
         userService.CreateUser(userModel);//создаем модель пользователя
-        crateService.CreateCrate(new CrateModelDto(userId)).get(); // создаем корзину пользователя
+        crateService.CreateCrate(new CrateModelDto(userId)); // создаем корзину пользователя
         emailService.sendVerificationEmail(userModel); // отправка на почту сообщения для подтверждения почты
 
         UUID tokenId = UUID.randomUUID();
@@ -99,7 +93,7 @@ public class UserController
         String refreshToken = jwtService.GenerateRefreshToken(UserModelMapper.AsEntity(userModel), tokenId);
 
         refreshTokenService.CreateToken(new RefreshTokenModelDto(tokenId, refreshToken,
-                                     new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion))).get();
+                                     new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion)));
 
         Cookie refreshCookie = new Cookie("refresh", refreshToken);
         refreshCookie.setHttpOnly(true);
@@ -127,19 +121,19 @@ public class UserController
         model.setPassword(encoder.encode(model.getPassword()));
        
 
-        if(!authenticationService.SingInByEmail(model).get())
+        if(!authenticationService.SingInByEmail(model))
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         UUID tokenId = UUID.randomUUID();
-        UserModelDto dto = userService.GetUserByUserName(model.getLogin()).get();
+        UserModelDto dto = userService.GetUserByUserName(model.getLogin());
         
         String accessToken = jwtService.GenerateAccessToken(UserModelMapper.AsEntity(dto),tokenId);
         String refreshToken = jwtService.GenerateRefreshToken(UserModelMapper.AsEntity(dto), tokenId);
 
         refreshTokenService.CreateToken(new RefreshTokenModelDto(tokenId, refreshToken,
-                                     new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion))).get();
+                                     new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion)));
 
         Cookie refreshCookie = new Cookie("refresh", refreshToken);
         refreshCookie.setHttpOnly(true);
@@ -159,26 +153,26 @@ public class UserController
     public ResponseEntity<String> LogInByUsername(@RequestBody LogInModel model, HttpServletResponse response) throws InterruptedException, ExecutionException
     {
 
-        if( userService.GetUserByUserName(model.getLogin()).get()== null)
+        if( userService.GetUserByUserName(model.getLogin())== null)
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         
         model.setPassword(encoder.encode(model.getPassword()));
 
-        if(!authenticationService.SignInByLogin(model).get())
+        if(!authenticationService.SignInByLogin(model))
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        UserModelDto dto = userService.GetUserByUserName(model.getLogin()).get();
+        UserModelDto dto = userService.GetUserByUserName(model.getLogin());
         UUID tokenId = UUID.randomUUID();
 
         String accessToken = jwtService.GenerateAccessToken(UserModelMapper.AsEntity(dto), tokenId);
         String refreshToken = jwtService.GenerateRefreshToken(UserModelMapper.AsEntity(dto), tokenId);
 
         refreshTokenService.CreateToken(new RefreshTokenModelDto(tokenId, refreshToken, 
-                                        new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion))).get();
+                                        new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion)));
 
         Cookie refreshCookie = new Cookie("refresh", refreshToken);
         refreshCookie.setHttpOnly(true);
@@ -196,7 +190,7 @@ public class UserController
     @GetMapping("/")
     public ResponseEntity<UserModelDto> GetUserByUsername(String username) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(userService.GetUserByUserName(username).get());
+        return ResponseEntity.ok(userService.GetUserByUserName(username));
     }
 
     // получение новой пары access и refresh токена
@@ -228,7 +222,7 @@ public class UserController
 
         UUID tokenId = UUID.fromString(jwtService.ExtractTokenId(accessToken));
 
-        RefreshTokenModelDto refreshDto = refreshTokenService.GetTokenById(tokenId).get();
+        RefreshTokenModelDto refreshDto = refreshTokenService.GetTokenById(tokenId);
         
         // если в бд нет токена по такому id тогда удаляем куки
         if(refreshToken == null)
@@ -283,9 +277,9 @@ public class UserController
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        UserModelDto dto = userService.GetUserById(UUID.fromString(jwtService.ExtractId(accessToken))).get();
+        UserModelDto dto = userService.GetUserById(UUID.fromString(jwtService.ExtractId(accessToken)));
 
-        refreshTokenService.DeleteTokenById(tokenId).get();
+        refreshTokenService.DeleteTokenById(tokenId);
 
         tokenId = UUID.randomUUID();
 
@@ -293,7 +287,7 @@ public class UserController
         refreshToken = jwtService.GenerateRefreshToken(UserModelMapper.AsEntity(dto), tokenId);
 
         refreshTokenService.CreateToken(new RefreshTokenModelDto(tokenId, refreshToken, 
-                                        new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion))).get();
+                                        new Date(System.currentTimeMillis() +JwtService.refreshTokenExpitaion)));
 
         Cookie refreshCookie = new Cookie("refresh", refreshToken);
         refreshCookie.setHttpOnly(true);
@@ -311,7 +305,7 @@ public class UserController
     @PostMapping("/forgot")
     public ResponseEntity<String> ForgotPassword(String username) throws InterruptedException, ExecutionException, MessagingException
     {
-        UserModelDto modelDto = userService.GenerateNewPassword(username).get(); // получаем dto юзера с новым паролем
+        UserModelDto modelDto = userService.GenerateNewPassword(username); // получаем dto юзера с новым паролем
 
         String password = modelDto.getPassword();
 
@@ -353,12 +347,12 @@ public class UserController
     {
         UUID userId = UUID.fromString(jwtService.ExtractId(accessToken));
 
-        if(userService.GetUserById(userId).get() == null)
+        if(userService.GetUserById(userId) == null)
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        boolean isUserDeleted = userService.DeleteUserById(userId).get();
+        boolean isUserDeleted = userService.DeleteUserById(userId);
 
         if(!isUserDeleted)
         {
@@ -373,7 +367,7 @@ public class UserController
     public ResponseEntity<String> UpdateUserInfo(@RequestBody UserModelDto updatableModel) throws InterruptedException, ExecutionException
     {
         System.out.println(updatableModel.getId());
-        UserModelDto userModel = userService.GetUserById(updatableModel.getId()).get();
+        UserModelDto userModel = userService.GetUserById(updatableModel.getId());
 
         if(userModel == null)
         {
@@ -383,7 +377,7 @@ public class UserController
         userModel.setName(updatableModel.getName());
         userModel.setUserSurname(updatableModel.getUserSurname());
         
-        if(!userService.UpdateUser(userModel).get())
+        if(!userService.UpdateUser(userModel))
         {
             return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
         }
@@ -395,7 +389,7 @@ public class UserController
     @PutMapping("/update/password")
     public ResponseEntity<String> UpdateUserPassword(UUID userId, String oldPassword, String newPassword) throws InterruptedException, ExecutionException
     {
-        UserModelDto userModel = userService.GetUserById(userId).get();
+        UserModelDto userModel = userService.GetUserById(userId);
 
         if(!encoder.matches(oldPassword, userModel.getPassword()))
         {
@@ -404,7 +398,7 @@ public class UserController
 
         userModel.setPassword(encoder.encode(newPassword));
         
-        if(userService.UpdateUser(userModel).get())
+        if(userService.UpdateUser(userModel))
         {
             return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
         }

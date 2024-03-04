@@ -9,7 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class BookService implements IBookService
 
     @Override
     @Async
-    public CompletableFuture<List<BookModelDto>> GetAllModelsByPage(int page) 
+    public List<BookModelDto> GetAllModelsByPage(int page) 
     {
         List<BookModelDto> books = Collections.synchronizedList(bookRepo.GetAllBooksByPage(page)
                                                     .stream()
@@ -46,40 +45,40 @@ public class BookService implements IBookService
                                                     .collect(Collectors.toList())
                                                     );
 
-        return CompletableFuture.completedFuture(books);
+        return books;
     }
 
     @Override
     @Async
-    public CompletableFuture<BookModelDto> GetBookModelById(UUID id) 
+    public BookModelDto GetBookModelById(UUID id) 
     {
-        return CompletableFuture.completedFuture(BookModelMapper.AsDto(bookRepo.GetBookBookById(id)));
+        return BookModelMapper.AsDto(bookRepo.GetBookBookById(id));
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> CreateModel(BookModelDto model) 
+    public boolean CreateModel(BookModelDto model) 
     {
-        return CompletableFuture.completedFuture(bookRepo.CreateBook(BookModelMapper.AsEntity(model)));
+        return bookRepo.CreateBook(BookModelMapper.AsEntity(model));
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> DeleteModelById(UUID id) 
+    public boolean DeleteModelById(UUID id) 
     {
-        return CompletableFuture.completedFuture(bookRepo.DeleteBookById(id));
+        return bookRepo.DeleteBookById(id);
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> UpdateModel(BookModelDto model) 
+    public boolean UpdateModel(BookModelDto model) 
     {
-        return CompletableFuture.completedFuture(bookRepo.UpdateBook(BookModelMapper.AsEntity(model)));
+        return bookRepo.UpdateBook(BookModelMapper.AsEntity(model));
     }
 
     @Override
     @Async
-    public CompletableFuture<List<BookModelDto>> GetBooksByGenres(List<GenreModelDto> genres, int page) 
+    public List<BookModelDto> GetBooksByGenres(List<GenreModelDto> genres, int page) 
     {
         List<BookModelDto> models = Collections.synchronizedList(
             bookRepo.GetBooksByGenres(genres.stream().map(GenreModelMapper::AsEntity).collect(Collectors.toList()), page)
@@ -88,12 +87,12 @@ public class BookService implements IBookService
                 .collect(Collectors.toList())
         );
 
-        return CompletableFuture.completedFuture(models);
+        return models;
     }
 
     @Override
     @Async
-    public CompletableFuture<String> SaveBookCover(MultipartFile model) 
+    public String SaveBookCover(MultipartFile model) 
     {
          // проверяем на то null ли поступаемый файл
         if(model.isEmpty())
@@ -132,59 +131,59 @@ public class BookService implements IBookService
             throw new StorageException("Exception during saving the file");
         }
         
-        return CompletableFuture.completedFuture(destinationPath.toString());
+        return destinationPath.toString();
     }
 
     @Override
     @Async
-    public CompletableFuture<List<BookModelDto>> FindBooksByAuthor(String authorName, int page) 
+    public List<BookModelDto> FindBooksByAuthor(String authorName, int page) 
     {
         List<BookModelDto> books = bookRepo.FindBooksByAuthor(authorName, page)
                                             .stream()
                                             .map(BookModelMapper::AsDto)
                                             .collect(Collectors.toList());
-        return CompletableFuture.completedFuture(books);
+        return books;
     }
 
     @Override
     @Async
-    public CompletableFuture<List<BookModelDto>> FindBooksByName(String bookName, int page) 
+    public List<BookModelDto> FindBooksByName(String bookName, int page) 
     {
         List<BookModelDto> books = bookRepo.FindBooksByName(bookName, page)
                                             .stream()
                                             .map(BookModelMapper::AsDto)
                                             .collect(Collectors.toList());
-        return CompletableFuture.completedFuture(books);
+        return books;
     }
 
     @Override
     @Async
-    public CompletableFuture<Long> GetMaxPageForAll() 
+    public long GetMaxPageForAll() 
     {
-        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForAll());        
+        return bookRepo.GetMaxPageForAll();        
     }
 
     @Override
     @Async
-    public CompletableFuture<Long> GetMaxPageForGenresSearch(List<GenreModelDto> genres) 
+    public long GetMaxPageForGenresSearch(List<GenreModelDto> genres) 
     {
-        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForGenresSearch(genres.stream()
-                                                                    .map(GenreModelMapper::AsEntity)
-                                                                    .collect(Collectors.toList())));
+        return bookRepo.GetMaxPageForGenresSearch(genres.stream()
+                    .map(GenreModelMapper::AsEntity)
+                    .collect(Collectors.toList()));
     }
 
     @Override
     @Async
-    public CompletableFuture<Long> GetMaxPageForSearchByAuthor(String authorName) 
+    public long GetMaxPageForSearchByAuthor(String authorName) 
     {
-        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForSearchByAuthor(authorName));
+        return bookRepo.GetMaxPageForSearchByAuthor(authorName);
     }
 
     @Override
     @Async
-    public CompletableFuture<Long> GetMaxPageForSearchByBookName(String bookName) 
+    public long GetMaxPageForSearchByBookName(String bookName) 
     {
-        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForSearchByBookName(bookName));
+        return bookRepo.GetMaxPageForSearchByBookName(bookName);
     }
 
 }

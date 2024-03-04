@@ -26,7 +26,7 @@ public class GnereController
     @GetMapping("/")
     public ResponseEntity<List<GenreModelDto>> GetAllGenres() throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(genreService.GetAllGenres().get());
+        return ResponseEntity.ok(genreService.GetAllGenres());
     }
 
     // получаем жанр по id
@@ -34,14 +34,9 @@ public class GnereController
     public ResponseEntity<GenreModelDto> GetGenreById(@PathVariable(name = "genreId") UUID genreId)
     {
         GenreModelDto modelDto = null;
-
-        try {
-            modelDto = genreService.GetGenreById(genreId).get();
-        } 
-        catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(null);
-        }
+        
+        modelDto = genreService.GetGenreById(genreId);
+        
 
         if(modelDto == null)
         {

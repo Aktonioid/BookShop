@@ -1,7 +1,5 @@
 package com.bookshop.bookshop.infrastucture.services;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -28,7 +26,7 @@ public class AuthenticationService implements IAuthenticationService
     // елси вернулся не null значит username или email уже используются(Что именно используется указано в строке, которая выводиться)
     @Async
     @Override
-    public CompletableFuture<String> SignUp(UserModelDto model) 
+    public String SignUp(UserModelDto model) 
     {
         StringBuffer sb = new StringBuffer();
 
@@ -44,50 +42,50 @@ public class AuthenticationService implements IAuthenticationService
 
         if(!sb.toString().isEmpty())
         {
-            return CompletableFuture.completedFuture(sb.toString());
+            return sb.toString();
         }
 
-        return CompletableFuture.completedFuture("");
+        return "";
     }
     
     @Async
     @Override
-    public CompletableFuture<Boolean> SignInByLogin(LogInModel login) 
+    public boolean SignInByLogin(LogInModel login) 
     {
         UserModel userModel = userRepo.UserByUsername(login.getLogin());
 
         if(userModel == null)
         {
-            return CompletableFuture.completedFuture(false); // пользователя с таким username нет в бд
+            return false; // пользователя с таким username нет в бд
         }
 
         // Проверка пароля
         if(encoder.matches(login.getPassword(), userModel.getPassword()))
         {
-            return CompletableFuture.completedFuture(false);    
+            return false;    
         }
 
-        return CompletableFuture.completedFuture(true); // Все ок
+        return true; // Все ок
     }
 
     @Async
     @Override
-    public CompletableFuture<Boolean> SingInByEmail(LogInModel login) 
+    public boolean SingInByEmail(LogInModel login) 
     {
         UserModel userModel = userRepo.UserByEmail(login.getLogin());
 
         if(userModel == null) // Есть ли user в бд
         {
-            return CompletableFuture.completedFuture(false);
+            return false;
         }
 
         // Проверка пароля
         if(encoder.matches(login.getPassword(), userModel.getPassword()))
         {
-            return CompletableFuture.completedFuture(false);
+            return false;
         }
 
-        return CompletableFuture.completedFuture(true); // Все ок
+        return true; // Все ок
     }
 
     

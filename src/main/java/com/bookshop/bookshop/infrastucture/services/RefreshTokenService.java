@@ -1,7 +1,6 @@
 package com.bookshop.bookshop.infrastucture.services;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -23,7 +22,7 @@ public class RefreshTokenService implements IRefreshTokenService
 
     @Override
     @Async
-    public CompletableFuture<RefreshTokenModelDto> GetTokenById(UUID tokenId) 
+    public RefreshTokenModelDto GetTokenById(UUID tokenId) 
     {
         RefreshTokenModel model = refreshTokenRepo.GetTokenById(tokenId);
 
@@ -31,22 +30,21 @@ public class RefreshTokenService implements IRefreshTokenService
         {
             return null;
         }
-        return CompletableFuture.completedFuture(RefreshTokenModelMapper.AsDto(model));
+        return RefreshTokenModelMapper.AsDto(model);
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> CreateToken(RefreshTokenModelDto token) 
+    public boolean CreateToken(RefreshTokenModelDto token) 
     {
-        System.out.println("что-то");
-        return CompletableFuture.completedFuture(refreshTokenRepo.CreateToken(RefreshTokenModelMapper.AsEntity(token)));
+        return refreshTokenRepo.CreateToken(RefreshTokenModelMapper.AsEntity(token));
     }
 
     @Override
     @Async
-    public CompletableFuture<Boolean> DeleteTokenById(UUID tokenId) 
+    public boolean DeleteTokenById(UUID tokenId) 
     {
-        return CompletableFuture.completedFuture(refreshTokenRepo.DeleteTokenById(tokenId));
+        return refreshTokenRepo.DeleteTokenById(tokenId);
     }
 
     
