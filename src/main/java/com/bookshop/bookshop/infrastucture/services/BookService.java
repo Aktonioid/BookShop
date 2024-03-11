@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class BookService implements IBookService
 
     @Override
     @Async
-    public List<BookModelDto> GetAllModelsByPage(int page) 
+    public CompletableFuture<List<BookModelDto>> GetAllModelsByPage(int page) 
     {
         List<BookModelDto> books = Collections.synchronizedList(bookRepo.GetAllBooksByPage(page)
                                                     .stream()
@@ -45,40 +46,40 @@ public class BookService implements IBookService
                                                     .collect(Collectors.toList())
                                                     );
 
-        return books;
+        return CompletableFuture.completedFuture(books);
     }
 
     @Override
     @Async
-    public BookModelDto GetBookModelById(UUID id) 
+    public CompletableFuture<BookModelDto> GetBookModelById(UUID id) 
     {
-        return BookModelMapper.AsDto(bookRepo.GetBookBookById(id));
+        return CompletableFuture.completedFuture(BookModelMapper.AsDto(bookRepo.GetBookBookById(id)));
     }
 
     @Override
     @Async
-    public boolean CreateModel(BookModelDto model) 
+    public CompletableFuture<Boolean> CreateModel(BookModelDto model) 
     {
-        return bookRepo.CreateBook(BookModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(bookRepo.CreateBook(BookModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean DeleteModelById(UUID id) 
+    public CompletableFuture<Boolean> DeleteModelById(UUID id) 
     {
-        return bookRepo.DeleteBookById(id);
+        return CompletableFuture.completedFuture(bookRepo.DeleteBookById(id));
     }
 
     @Override
     @Async
-    public boolean UpdateModel(BookModelDto model) 
+    public CompletableFuture<Boolean> UpdateModel(BookModelDto model) 
     {
-        return bookRepo.UpdateBook(BookModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(bookRepo.UpdateBook(BookModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public List<BookModelDto> GetBooksByGenres(List<GenreModelDto> genres, int page) 
+    public CompletableFuture<List<BookModelDto>> GetBooksByGenres(List<GenreModelDto> genres, int page) 
     {
         List<BookModelDto> models = Collections.synchronizedList(
             bookRepo.GetBooksByGenres(genres.stream().map(GenreModelMapper::AsEntity).collect(Collectors.toList()), page)
@@ -87,12 +88,12 @@ public class BookService implements IBookService
                 .collect(Collectors.toList())
         );
 
-        return models;
+        return CompletableFuture.completedFuture(models);
     }
 
     @Override
     @Async
-    public String SaveBookCover(MultipartFile model) 
+    public CompletableFuture<String> SaveBookCover(MultipartFile model) 
     {
          // проверяем на то null ли поступаемый файл
         if(model.isEmpty())
@@ -131,59 +132,59 @@ public class BookService implements IBookService
             throw new StorageException("Exception during saving the file");
         }
         
-        return destinationPath.toString();
+        return CompletableFuture.completedFuture(destinationPath.toString());
     }
 
     @Override
     @Async
-    public List<BookModelDto> FindBooksByAuthor(String authorName, int page) 
+    public CompletableFuture<List<BookModelDto>> FindBooksByAuthor(String authorName, int page) 
     {
         List<BookModelDto> books = bookRepo.FindBooksByAuthor(authorName, page)
                                             .stream()
                                             .map(BookModelMapper::AsDto)
                                             .collect(Collectors.toList());
-        return books;
+        return CompletableFuture.completedFuture(books);
     }
 
     @Override
     @Async
-    public List<BookModelDto> FindBooksByName(String bookName, int page) 
+    public CompletableFuture<List<BookModelDto>> FindBooksByName(String bookName, int page) 
     {
         List<BookModelDto> books = bookRepo.FindBooksByName(bookName, page)
                                             .stream()
                                             .map(BookModelMapper::AsDto)
                                             .collect(Collectors.toList());
-        return books;
+        return CompletableFuture.completedFuture(books);
     }
 
     @Override
     @Async
-    public long GetMaxPageForAll() 
+    public CompletableFuture<Long> GetMaxPageForAll() 
     {
-        return bookRepo.GetMaxPageForAll();        
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForAll());        
     }
 
     @Override
     @Async
-    public long GetMaxPageForGenresSearch(List<GenreModelDto> genres) 
+    public CompletableFuture<Long> GetMaxPageForGenresSearch(List<GenreModelDto> genres) 
     {
-        return bookRepo.GetMaxPageForGenresSearch(genres.stream()
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForGenresSearch(genres.stream()
                     .map(GenreModelMapper::AsEntity)
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList())));
     }
 
     @Override
     @Async
-    public long GetMaxPageForSearchByAuthor(String authorName) 
+    public CompletableFuture<Long> GetMaxPageForSearchByAuthor(String authorName) 
     {
-        return bookRepo.GetMaxPageForSearchByAuthor(authorName);
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForSearchByAuthor(authorName));
     }
 
     @Override
     @Async
-    public long GetMaxPageForSearchByBookName(String bookName) 
+    public CompletableFuture<Long> GetMaxPageForSearchByBookName(String bookName) 
     {
-        return bookRepo.GetMaxPageForSearchByBookName(bookName);
+        return CompletableFuture.completedFuture(bookRepo.GetMaxPageForSearchByBookName(bookName));
     }
 
 }

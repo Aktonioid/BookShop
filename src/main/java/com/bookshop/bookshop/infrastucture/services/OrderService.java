@@ -3,6 +3,7 @@ package com.bookshop.bookshop.infrastucture.services;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,55 +26,55 @@ public class OrderService implements IOrderService
 
     @Override
     @Async
-    public List<OrderModelDto> GetAllOrdersByPage(int page) 
+    public CompletableFuture<List<OrderModelDto>> GetAllOrdersByPage(int page) 
     {
-        return Collections.synchronizedList
+        return CompletableFuture.completedFuture(Collections.synchronizedList
                 (
                     orderRepo.GetAllOrdersByPage(page)
                         .stream()
                         .map(OrderModelMapper::AsDto)
                         .collect(Collectors.toList())
-                );
+                ));
     }
 
     @Override
     @Async
-    public List<OrderModelDto> GetOrdersByUserId(UUID userId, int page) 
+    public CompletableFuture<List<OrderModelDto>> GetOrdersByUserId(UUID userId, int page) 
     {
-        return Collections.synchronizedList(
+        return CompletableFuture.completedFuture(Collections.synchronizedList(
                 orderRepo.GetOrdersByUserId(userId, page)
                 .stream()
                 .map(OrderModelMapper::AsDto)
-                .collect(Collectors.toList()))
+                .collect(Collectors.toList())))
         ;
     }
 
     @Override
     @Async
-    public OrderModelDto GetOrderById(UUID id) 
+    public CompletableFuture<OrderModelDto> GetOrderById(UUID id) 
     {
-        return OrderModelMapper.AsDto(orderRepo.GetOrderById(id));
+        return CompletableFuture.completedFuture(OrderModelMapper.AsDto(orderRepo.GetOrderById(id)));
     }
 
     @Override
     @Async
-    public boolean CreateOrder(OrderModelDto model) 
+    public CompletableFuture<Boolean> CreateOrder(OrderModelDto model) 
     {
-        return orderRepo.CreateOrder(OrderModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(orderRepo.CreateOrder(OrderModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean UpdateOrder(OrderModelDto model) 
+    public CompletableFuture<Boolean> UpdateOrder(OrderModelDto model) 
     {
-        return orderRepo.UpdateOrder(OrderModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(orderRepo.UpdateOrder(OrderModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean DeleteOrderById(UUID id) 
+    public CompletableFuture<Boolean> DeleteOrderById(UUID id) 
     {
-        return orderRepo.DeleteOrderById(id);
+        return CompletableFuture.completedFuture(orderRepo.DeleteOrderById(id));
     }
 
 }

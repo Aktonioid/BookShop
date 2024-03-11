@@ -1,5 +1,7 @@
 package com.bookshop.bookshop.infrastucture.services;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -28,7 +30,7 @@ public class EmailSerrvice implements IEmailService
 
     @Override
     @Async
-    public void sendVerificationEmail(UserModelDto userModel) throws MessagingException
+    public CompletableFuture<Boolean> sendVerificationEmail(UserModelDto userModel) 
     {
         String toAddres = userModel.getEmail();
         String fromAdress = env.getProperty("spring.mail.username"); // кто присылает сообщение
@@ -38,12 +40,20 @@ public class EmailSerrvice implements IEmailService
                         +"Your verification code is: "+ userModel.getVeridficationCode();
 
 
-        EmailSend(toAddres, fromAdress, subject, content);
+        try {
+            EmailSend(toAddres, fromAdress, subject, content);
+        } 
+        catch (MessagingException e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture(false);
+        }
+
+        return CompletableFuture.completedFuture(true);
     }
 
     @Override
     @Async
-    public void sendEmailWithPassword(UserModelDto userModel, String password) throws MessagingException 
+    public CompletableFuture<Boolean> sendEmailWithPassword(UserModelDto userModel, String password)
     {
         String toAddres = userModel.getEmail();
         String fromAdress = env.getProperty("spring.mail.username"); // кто присылает сообщение
@@ -53,7 +63,14 @@ public class EmailSerrvice implements IEmailService
                         +"Your new password: "+ password;
         //
         
-        EmailSend(toAddres, fromAdress, subject, content);
+        try {
+            EmailSend(toAddres, fromAdress, subject, content);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture(false);
+        }
+
+        return CompletableFuture.completedFuture(true);
     }
     
     @SuppressWarnings("null")

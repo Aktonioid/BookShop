@@ -26,16 +26,16 @@ public class GnereController
     @GetMapping("/")
     public ResponseEntity<List<GenreModelDto>> GetAllGenres() throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(genreService.GetAllGenres());
+        return ResponseEntity.ok(genreService.GetAllGenres().get());
     }
 
     // получаем жанр по id
     @GetMapping("/{genreId}")
-    public ResponseEntity<GenreModelDto> GetGenreById(@PathVariable(name = "genreId") UUID genreId)
+    public ResponseEntity<GenreModelDto> GetGenreById(@PathVariable(name = "genreId") UUID genreId) throws InterruptedException, ExecutionException
     {
         GenreModelDto modelDto = null;
         
-        modelDto = genreService.GetGenreById(genreId);
+        modelDto = genreService.GetGenreById(genreId).get();
         
 
         if(modelDto == null)

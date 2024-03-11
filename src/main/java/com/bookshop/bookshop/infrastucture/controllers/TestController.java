@@ -49,6 +49,6 @@ public class TestController
     @GetMapping("/author/pages")
     public ResponseEntity<Long> GetMaxPageForSearchByAuthor(String authorName) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetMaxPageForSearchByAuthor(authorName));
+        return ResponseEntity.ok(bookService.GetMaxPageForSearchByAuthor(authorName).get());
     }
 }

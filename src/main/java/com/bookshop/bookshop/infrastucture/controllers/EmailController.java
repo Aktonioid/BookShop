@@ -30,15 +30,19 @@ public class EmailController
     @PostMapping("send/{id}")
     public ResponseEntity<String> SendVerificationEmail(@PathVariable(name = "id") UUID userId) throws InterruptedException, ExecutionException, MessagingException
     {   
-        UserModelDto userModel = userService.GetUserById(userId);
+        UserModelDto userModel = userService.GetUserById(userId).get();
 
         if(userModel == null)
         {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        emailService.sendVerificationEmail(userModel);
-        System.out.println("send");
+        boolean isSent = emailService.sendVerificationEmail(userModel).get();
+
+        if(!isSent)
+        {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
         return ResponseEntity.ok("отправлено");
     }
@@ -47,14 +51,14 @@ public class EmailController
     @PostMapping("verify/{id}")
     public ResponseEntity<String> CheckEmailVerification(@PathVariable(name = "id") UUID userId, String verificationCode) throws InterruptedException, ExecutionException
     {
-        UserModelDto userModel = userService.GetUserById(userId);
+        UserModelDto userModel = userService.GetUserById(userId).get();
 
         if(!userModel.getVeridficationCode().equals(verificationCode))
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         userModel.setEmailVerificated(true);
-        userService.UpdateUser(userModel);
+        userService.UpdateUser(userModel).get();
 
         return ResponseEntity.ok("Подтверждено");
     }

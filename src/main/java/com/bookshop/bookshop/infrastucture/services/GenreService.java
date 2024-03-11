@@ -3,6 +3,7 @@ package com.bookshop.bookshop.infrastucture.services;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class GenreService implements IGenreService
 
     @Override
     @Async
-    public List<GenreModelDto> GetAllGenres() 
+    public CompletableFuture<List<GenreModelDto>> GetAllGenres() 
     {
         List<GenreModelDto> genres = Collections.synchronizedList
         (
@@ -35,41 +36,41 @@ public class GenreService implements IGenreService
                 .collect(Collectors.toList())
         );
 
-        return genres;
+        return CompletableFuture.completedFuture(genres);
     }
 
     @Override
     @Async
-    public GenreModelDto GetGenreById(UUID id) 
+    public CompletableFuture<GenreModelDto> GetGenreById(UUID id) 
     {
-        return GenreModelMapper.AsDto(genreRepo.GetGenreById(id));
+        return CompletableFuture.completedFuture(GenreModelMapper.AsDto(genreRepo.GetGenreById(id)));
     }
 
     @Override
     @Async
-    public boolean CreateModel(GenreModelDto model) 
+    public CompletableFuture<Boolean> CreateModel(GenreModelDto model) 
     {
-        return genreRepo.CreateModel(GenreModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(genreRepo.CreateModel(GenreModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean UpdateModel(GenreModelDto model) 
+    public CompletableFuture<Boolean> UpdateModel(GenreModelDto model) 
     {
-        return genreRepo.UpdateModel(GenreModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(genreRepo.UpdateModel(GenreModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean DeleteModelById(UUID id) 
+    public CompletableFuture<Boolean> DeleteModelById(UUID id) 
     {
-        return genreRepo.DeleteModelById(id);
+        return CompletableFuture.completedFuture(genreRepo.DeleteModelById(id));
     }
 
     @Override
-    public boolean IsGenreExhistsByName(String genreName) 
+    public CompletableFuture<Boolean> IsGenreExhistsByName(String genreName) 
     {
-        return genreRepo.IsGenreExhistsByName(genreName);
+        return CompletableFuture.completedFuture(genreRepo.IsGenreExhistsByName(genreName));
     }
     
 }

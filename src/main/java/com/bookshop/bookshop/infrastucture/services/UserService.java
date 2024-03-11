@@ -3,6 +3,7 @@ package com.bookshop.bookshop.infrastucture.services;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -31,35 +32,35 @@ public class UserService implements IUserService
 
     @Override
     @Async
-    public UserModelDto GetUserById(UUID id) 
+    public CompletableFuture<UserModelDto> GetUserById(UUID id) 
     {
-        return UserModelMapper.AsDto(userRepo.UserById(id));
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(userRepo.UserById(id)));
     }
 
     @Override
     @Async
-    public boolean CreateUser(UserModelDto model) 
+    public CompletableFuture<Boolean> CreateUser(UserModelDto model) 
     {
-        return userRepo.CreateUser(UserModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(userRepo.CreateUser(UserModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean UpdateUser(UserModelDto model) // хз как правильно сделать это
+    public CompletableFuture<Boolean> UpdateUser(UserModelDto model) // хз как правильно сделать это
     {
-        return userRepo.UpdateUser(UserModelMapper.AsEntity(model));
+        return CompletableFuture.completedFuture(userRepo.UpdateUser(UserModelMapper.AsEntity(model)));
     }
 
     @Override
     @Async
-    public boolean DeleteUserById(UUID id) 
+    public CompletableFuture<Boolean> DeleteUserById(UUID id) 
     {
-        return userRepo.DeleteUserById(id);
+        return CompletableFuture.completedFuture(userRepo.DeleteUserById(id));
     }
 
     @Override
     @Async
-    public UserModelDto GetUserByEmail(String email) 
+    public CompletableFuture<UserModelDto> GetUserByEmail(String email) 
     {
         UserModel model = userRepo.UserByEmail(email);
 
@@ -68,12 +69,12 @@ public class UserService implements IUserService
             return null;
         }
 
-        return UserModelMapper.AsDto(model);
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(model));
     }
 
     @Override
     @Async
-    public UserModelDto GetUserByUserName(String username) 
+    public CompletableFuture<UserModelDto> GetUserByUserName(String username) 
     {   
         UserModel model = userRepo.UserByUsername(username);
 
@@ -82,7 +83,7 @@ public class UserService implements IUserService
             return null;
         }
 
-        return UserModelMapper.AsDto(model);
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(model));
     }
 
     @Override
@@ -100,7 +101,7 @@ public class UserService implements IUserService
     @Override
     @Async
     // возвращает string только для тестов, чтоб я пока не прикрутил отправку пароля на почту чтоб я просто пароль знал
-    public UserModelDto GenerateNewPassword(String username) 
+    public CompletableFuture<UserModelDto> GenerateNewPassword(String username) 
     {
         UserModel userModel = userRepo.UserByUsername(username);
 
@@ -113,11 +114,11 @@ public class UserService implements IUserService
 
         userModel.setPassword(newPassword);
 
-        return UserModelMapper.AsDto(userModel);
+        return CompletableFuture.completedFuture(UserModelMapper.AsDto(userModel));
     }
 
     @Override
-    public List<UserModelDto> GetUsersByPage(int page) 
+    public CompletableFuture<List<UserModelDto>> GetUsersByPage(int page) 
     {
         List<UserModelDto> users = Collections.synchronizedList
                                 (userRepo.GetAllUsersByPage(page)
@@ -125,7 +126,7 @@ public class UserService implements IUserService
                                 .map(UserModelMapper::AsDto)
                                 .collect(Collectors.toList()));
 
-        return users;
+        return CompletableFuture.completedFuture(users);
     }
 
     

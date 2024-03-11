@@ -55,7 +55,7 @@ public class AdminController
 
         if(file != null)// Проверка на то что есть что сохранять
         {
-            bookCover = bookService.SaveBookCover(file);
+            bookCover = bookService.SaveBookCover(file).get();
         }
 
         if(!bookCover.equals("")) // проверяем было ли что сохранять
@@ -63,7 +63,7 @@ public class AdminController
             model.setPictureUrl(bookCover);
         }
 
-        boolean isBookCreate = bookService.CreateModel(model);
+        boolean isBookCreate = bookService.CreateModel(model).get();
 
         if(!isBookCreate)
         {
@@ -80,7 +80,7 @@ public class AdminController
                                             ) throws InterruptedException, ExecutionException
     {
         // проверка на то что такая модель вообще есть
-        if(bookService.GetBookModelById(model.getId()) == null)
+        if(bookService.GetBookModelById(model.getId()).get() == null)
         {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -88,7 +88,7 @@ public class AdminController
         String bookCover = "";
         if(file != null) // Проверка на то что есть что сохранять
         {
-            bookCover = bookService.SaveBookCover(file);
+            bookCover = bookService.SaveBookCover(file).get();
         }
         
         if(!bookCover.equals("")) // проверяем было ли что сохранять
@@ -96,7 +96,7 @@ public class AdminController
             model.setPictureUrl(bookCover);
         }
 
-        if(!bookService.UpdateModel(model))
+        if(!bookService.UpdateModel(model).get())
         {
             return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
         }
@@ -108,12 +108,12 @@ public class AdminController
     @DeleteMapping("/books")
     public ResponseEntity<String> DeleteBookById(UUID bookId) throws InterruptedException, ExecutionException
     {
-        if(bookService.GetBookModelById(bookId) == null)
+        if(bookService.GetBookModelById(bookId).get() == null)
         {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);    
         }
         
-        if(!bookService.DeleteModelById(bookId))
+        if(!bookService.DeleteModelById(bookId).get())
         {
             return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
         }
@@ -137,12 +137,12 @@ public class AdminController
         }
 
         // проаерка на то существует ли жанр с таким именем
-        if(genreService.IsGenreExhistsByName(genreModel.getName()))
+        if(genreService.IsGenreExhistsByName(genreModel.getName()).get())
         {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        boolean isGenreCreated = genreService.CreateModel(genreModel);
+        boolean isGenreCreated = genreService.CreateModel(genreModel).get();
 
         if(!isGenreCreated)
         {
@@ -156,7 +156,7 @@ public class AdminController
     @DeleteMapping("/genres")
     public ResponseEntity<String> DeleteGenreById(UUID genreId) throws InterruptedException, ExecutionException
     {
-        boolean isGenreDeleted = genreService.DeleteModelById(genreId);
+        boolean isGenreDeleted = genreService.DeleteModelById(genreId).get();
 
         if(!isGenreDeleted)
         {
@@ -175,12 +175,12 @@ public class AdminController
     public ResponseEntity<String> DeleteUserById(UUID userId) throws InterruptedException, ExecutionException
     {
 
-        if(userService.GetUserById(userId) == null)
+        if(userService.GetUserById(userId).get() == null)
         {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        boolean isUserDeleted = userService.DeleteUserById(userId);
+        boolean isUserDeleted = userService.DeleteUserById(userId).get();
 
         if(!isUserDeleted)
         {
@@ -194,7 +194,7 @@ public class AdminController
     @GetMapping("/users/{page}")
     public ResponseEntity<List<UserModelDto>> GetUsersByPage(@PathVariable("page") int page) throws InterruptedException, ExecutionException
     {
-        List<UserModelDto> users = userService.GetUsersByPage(page);
+        List<UserModelDto> users = userService.GetUsersByPage(page).get();
 
         return ResponseEntity.ok(users);
     }
@@ -207,7 +207,7 @@ public class AdminController
     @GetMapping("orders/{page}")
     public ResponseEntity<List<OrderModelDto>> GetAllOrders(@PathVariable("page") int page) throws InterruptedException, ExecutionException
     {
-        List<OrderModelDto> orders = orderService.GetAllOrdersByPage(page);
+        List<OrderModelDto> orders = orderService.GetAllOrdersByPage(page).get();
 
         return ResponseEntity.ok(orders);
     }

@@ -28,14 +28,14 @@ public class BooksController
     @GetMapping("/{page}")
     public ResponseEntity<List<BookModelDto>> GetAllModelsByPage(@PathVariable(name = "page") int page) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetAllModelsByPage(page));
+        return ResponseEntity.ok(bookService.GetAllModelsByPage(page).get());
     }
 
     // получение книги по id
     @GetMapping("/book/{bookId}")
     public ResponseEntity<BookModelDto> GetBookById(@PathVariable("bookId") UUID bookId) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetBookModelById(bookId));
+        return ResponseEntity.ok(bookService.GetBookModelById(bookId).get());
     }
 
     // по страничный поиск по жанрам
@@ -43,7 +43,7 @@ public class BooksController
     public ResponseEntity<List<BookModelDto>> GetBooksByGenres(@RequestParam List<GenreModelDto> genres, 
                                                                 @PathVariable("page") int page) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetBooksByGenres(genres, page));
+        return ResponseEntity.ok(bookService.GetBooksByGenres(genres, page).get());
     }
 
     // поиск по страницам по автору
@@ -51,41 +51,41 @@ public class BooksController
     public ResponseEntity<List<BookModelDto>> FindBooksByAuthor(String authorName, @PathVariable("page")int page)
                                                 throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.FindBooksByAuthor(authorName, page));
+        return ResponseEntity.ok(bookService.FindBooksByAuthor(authorName, page).get());
     }
 
     // Поиск по названию книги по страницам
     @GetMapping("/find/name/{page}")
     public ResponseEntity<List<BookModelDto>> FindBooksByName(String bookName, @PathVariable("page") int page) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.FindBooksByName(bookName, page));
+        return ResponseEntity.ok(bookService.FindBooksByName(bookName, page).get());
     }
 
     // получение всех страниц когда нет поиска
     @GetMapping("/pages/all")
     public ResponseEntity<Long> GetMaxPageForAll() throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetMaxPageForAll());
+        return ResponseEntity.ok(bookService.GetMaxPageForAll().get());
     }
 
     // получение максимального колличества страниц при поиске по жанрам
     @GetMapping("/pages/genres")
     public ResponseEntity<Long> GetMaxPageForGenresSearch(@RequestParam List<GenreModelDto> genres) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetMaxPageForGenresSearch(genres));
+        return ResponseEntity.ok(bookService.GetMaxPageForGenresSearch(genres).get());
     }
 
     // получение колличества страниц при поиске по автору
     @GetMapping("/pages/author")
     public ResponseEntity<Long> GetMaxPageForSearchByAuthor(String authorName) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetMaxPageForSearchByAuthor(authorName));
+        return ResponseEntity.ok(bookService.GetMaxPageForSearchByAuthor(authorName).get());
     }
 
     // получение максимального колличества страниц при поиске по названию книги
     @GetMapping("/pages/name")
     public ResponseEntity<Long> GetMaxPageForSearchByBookName(String bookName) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(bookService.GetMaxPageForSearchByBookName(bookName));
+        return ResponseEntity.ok(bookService.GetMaxPageForSearchByBookName(bookName).get());
     }
 }

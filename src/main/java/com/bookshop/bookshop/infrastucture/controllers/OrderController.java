@@ -31,14 +31,14 @@ public class OrderController
     @GetMapping("/{page}")
     public ResponseEntity<List<OrderModelDto>> GetUserOrders(UUID userId, @PathVariable("page") int page) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(orderService.GetOrdersByUserId(userId, page));
+        return ResponseEntity.ok(orderService.GetOrdersByUserId(userId, page).get());
     }
 
     // получение заказа по id заказа
     @GetMapping("/order/{orderId}")
     public ResponseEntity<OrderModelDto> GetOrderById(@PathVariable("orderId") UUID orderId) throws InterruptedException, ExecutionException
     {
-        return ResponseEntity.ok(orderService.GetOrderById(orderId));
+        return ResponseEntity.ok(orderService.GetOrderById(orderId).get());
     }
 
     // создание нового заказа с подтверждением оплаты(Тут симуляция)
@@ -46,15 +46,15 @@ public class OrderController
     public ResponseEntity<String> CreateNewOrder(String paymentToken, UUID userId,
                                         @RequestBody OrderModelDto order) throws InterruptedException, ExecutionException
     {
-        String tokenToCompare = paymentService.CreateToken(userId);   
-        boolean isPaymentTrue = paymentService.CheckPayment(paymentToken, tokenToCompare); //проверка на то что токены одинаковы
+        String tokenToCompare = paymentService.CreateToken(userId).get();   
+        boolean isPaymentTrue = paymentService.CheckPayment(paymentToken, tokenToCompare).get(); //проверка на то что токены одинаковы
         
         if(!isPaymentTrue)
         {
             return new ResponseEntity<>(HttpStatus.PAYMENT_REQUIRED);
         }
 
-        if(!orderService.CreateOrder(order))
+        if(!orderService.CreateOrder(order).get())
         {
             return new ResponseEntity<>(HttpStatus.INSUFFICIENT_STORAGE);
         }
